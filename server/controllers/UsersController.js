@@ -10,10 +10,10 @@ const { sanitizeAndValidate, sanitizeAndValidateArray } = require('../validator 
 
 const { OAuth2Client } = require('google-auth-library');
 
-const createToken = (id, email, fullname, userType) => {
+const createToken = (id, email, fullname, userType, image) => {
     const secretKey = process.env.SECRET_KEY;
 
-    const token = jwt.sign({ id, email, fullname, userType }, secretKey);
+    const token = jwt.sign({ id, email, fullname, userType, image }, secretKey);
     return token;
 };
 
@@ -81,7 +81,7 @@ const registerUser = async (req, res) => {
                                                         // create token
                                                         const userId = results.insertId;
 
-                                                        const token = createToken(userId, registerData.email, registerData.fullname, "Researcher");
+                                                        const token = createToken(userId, registerData.email, registerData.fullname, "Researcher", uniqueFilePath);
                                                         // send to client
                                                         res.status(200).json({ message: "Register Success!", token: token, id: userId });
                                                     }
@@ -137,7 +137,8 @@ const loginUser = async (req, res) => {
                             const email = results[0].email;
                             const fullname = results[0].fullname;
                             const userType = results[0].user_type;
-                            const token = createToken(userId, email, fullname, userType);
+                            const image = results[0].image;
+                            const token = createToken(userId, email, fullname, userType, image);
 
                             // send to client
                             res.status(200).json({ message: "Login Success!", token: token, id: userId });
@@ -185,10 +186,11 @@ const loginGoogle = async (req, res) => {
                         id: results[0].id,
                         email: results[0].email,
                         fullname: results[0].fullname,
-                        userType: results[0].user_type
+                        userType: results[0].user_type,
+                        image: results[0].image
                     };
 
-                    const token = createToken(fetchData.id, fetchData.email, fetchData.fullname, fetchData.userType);
+                    const token = createToken(fetchData.id, fetchData.email, fetchData.fullname, fetchData.userType, fetchData.image);
 
                     // send to client
                     res.status(200).json({ message: "Login Success!", token: token, id: fetchData.id });
@@ -241,10 +243,11 @@ const registerGoogle = async (req, res) => {
                                 id: results.insertId,
                                 email: user.email,
                                 fullname: user.name,
-                                userType: "Researcher"
+                                userType: "Researcher",
+                                image: user.picture
                             }
 
-                            const token = createToken(fetchData.id, fetchData.email, fetchData.fullname, fetchData.userType);
+                            const token = createToken(fetchData.id, fetchData.email, fetchData.fullname, fetchData.userType, fetchData.image);
 
                             // send to client
                             res.status(200).json({ message: "Register Success!", token: token, id: fetchData.id });

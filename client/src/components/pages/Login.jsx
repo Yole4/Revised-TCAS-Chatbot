@@ -5,10 +5,12 @@ import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import jwt_decode from 'jwt-decode';
 import { useContext } from 'react';
 import { AuthContext } from '../Context/AuthContext';
+import { useEffect } from 'react';
 
 function Login() {
 
-    const { isLoading, setIsLoading, userLoginData, setUserLoginData, isLoginGoogle, setIsLoginGoogle,
+    const { isLoading, setIsLoading, errorResponse,
+        userLoginData, setUserLoginData, isLoginGoogle, setIsLoginGoogle,
         userRegisterData, setUserRegisterData, isRegisterGoogle, setIsRegisterGoogle,
         handleRegister, registerInfo, setRegisterInfo,
         loginInfo, setLoginInfo, handleLogin
@@ -19,6 +21,17 @@ function Login() {
     const [fafaEye, setFafaEye] = useState(false);
     const [fafaEyes, setFafaEyes] = useState(false);
     const [fafaEyess, setFafaEyess] = useState(false);
+
+    // reset response after 5 seconds
+    const [responseCountDown, setResponseCountDown] = useState(false);
+    useEffect(() => {
+        if (errorResponse) {
+            setResponseCountDown(true);
+            setTimeout(() => {
+                setResponseCountDown(false);
+            }, 5000);
+        }
+    }, [errorResponse]);
 
     return (
         <>
@@ -55,7 +68,7 @@ function Login() {
 
                             <form onSubmit={handleLogin}>
                                 <div className="input-group mb-3">
-                                    <input type="email" style={{ height: '40px', paddingLeft: '15px', fontSize: '14px' }} className="form-control" value={loginInfo.email} onChange={(e) => setLoginInfo((prev) => ({...prev, email: e.target.value}))} placeholder="Email" />
+                                    <input type="email" style={{ height: '40px', paddingLeft: '15px', fontSize: '14px' }} className="form-control" value={loginInfo.email} onChange={(e) => setLoginInfo((prev) => ({ ...prev, email: e.target.value }))} placeholder="Email" />
                                     <div className="input-group-append" >
                                         <div className="input-group-text">
                                             <span className="fas fa-user" style={{ fontSize: '14px' }} />
@@ -63,7 +76,7 @@ function Login() {
                                     </div>
                                 </div>
                                 <div className="input-group mb-3">
-                                    <input style={{ height: '40px', paddingLeft: '15px', fontSize: '14px' }} type={fafaEyess ? 'text' : 'password'} value={loginInfo.password} onChange={(e) => setLoginInfo((prev) => ({...prev, password: e.target.value}))} className="form-control" placeholder="Password" />
+                                    <input style={{ height: '40px', paddingLeft: '15px', fontSize: '14px' }} type={fafaEyess ? 'text' : 'password'} value={loginInfo.password} onChange={(e) => setLoginInfo((prev) => ({ ...prev, password: e.target.value }))} className="form-control" placeholder="Password" />
                                     <div className="input-group-append">
                                         <div className="input-group-text">
                                             <span style={{ cursor: 'pointer', fontSize: '14px' }} onClick={() => setFafaEyess(fafaEyess ? false : true)} className={fafaEyess ? 'fa fa-eye' : 'fa fa-eye-slash'} />
@@ -71,11 +84,11 @@ function Login() {
                                     </div>
                                 </div>
 
-                                {/* {isErrorResponse && errorResponse && (
-                                    <p style={{ textAlign: 'center', fontSize: '14px', color: errorResponse.error ? 'lightblue' : 'white', backgroundColor: errorResponse.error ? 'rgb(94, 94, 159)' : 'rgb(219, 164, 164)', padding: '5px', borderRadius: '5px' }}>
-                                        {!errorResponse.error && errorResponse.message}
+                                {responseCountDown && errorResponse && errorResponse.isError && (
+                                    <p style={{ textAlign: 'center', fontSize: '14px', color: !errorResponse.isError ? 'lightblue' : 'white', backgroundColor: !errorResponse.isError ? 'rgb(94, 94, 159)' : 'rgb(219, 164, 164)', padding: '5px', borderRadius: '5px' }}>
+                                        {errorResponse.message}
                                     </p>
-                                )} */}
+                                )}
 
                                 <div className="row" style={{ display: 'flex', justifyContent: 'left', alignItems: 'center', fontSize: '14px', marginTop: '10px' }}>
                                     <div className="col-8">
@@ -174,11 +187,11 @@ function Login() {
                                     </div>
                                 </div>
 
-                                {/* {isErrorResponse && errorResponse && (
-                                    <p style={{ textAlign: 'center', fontSize: '14px', color: errorResponse.error ? 'lightblue' : 'white', backgroundColor: errorResponse.error ? 'rgb(94, 94, 159)' : 'rgb(219, 164, 164)', padding: '5px', borderRadius: '5px' }}>
-                                        {!errorResponse.error && errorResponse.message}
+                                {responseCountDown && errorResponse && errorResponse.isError && (
+                                    <p style={{ textAlign: 'center', fontSize: '14px', color: !errorResponse.isError ? 'lightblue' : 'white', backgroundColor: !errorResponse.isError ? 'rgb(94, 94, 159)' : 'rgb(219, 164, 164)', padding: '5px', borderRadius: '5px' }}>
+                                        {errorResponse.message}
                                     </p>
-                                )} */}
+                                )}
                                 <div>
                                     <button type="submit" style={{ height: '40px', fontSize: '14px' }} name="login" className="btn btn-primary btn-block">Register</button>
                                 </div>
@@ -194,6 +207,16 @@ function Login() {
                     </div>
                 )}
             </div>
+
+            {isLoading && (
+                <div className="popup">
+                    <button class="btn btn-primary" type="button" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} disabled>
+                        <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true" style={{ marginRight: '10px' }}></span>
+                        Loading...
+                    </button>
+                </div>
+            )}
+
         </>
     )
 }

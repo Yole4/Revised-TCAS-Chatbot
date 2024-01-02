@@ -184,7 +184,6 @@ export const AuthContextProvider = ({ children }) => {
 
             if (response.error) {
                 setErrorResponse({ message: response.message, isError: true });
-                console.log(response.message);
             } else {
                 setErrorResponse({ message: response.message, isError: false });
                 localStorage.setItem("token", response.token);
@@ -206,6 +205,7 @@ export const AuthContextProvider = ({ children }) => {
         user,
         isLoading,
         setIsLoading,
+        errorResponse,
         userLoginData,
         setUserLoginData,
         isLoginGoogle,

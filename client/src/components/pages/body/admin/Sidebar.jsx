@@ -11,7 +11,14 @@ import { MdDateRange } from "react-icons/md";
 import { IoSettingsOutline } from "react-icons/io5";
 import { FaUsers, FaThList, FaUsersCog } from "react-icons/fa";
 
+import { useContext } from 'react';
+import { AuthContext } from '../../../Context/AuthContext';
+
+import { backendUrl } from '../../../../utils/Services';
+
 function Sidebar() {
+
+    const {user} = useContext(AuthContext);
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -23,17 +30,17 @@ function Sidebar() {
                 {/* Brand Logo */}
                 <span className="brand-link span-cursor" style={{ width: '190px' }}>
                     <img src={logo} alt="AdminLTE Logo" className="brand-image img-circle elevation-3" style={{ opacity: '.8' }} />
-                    <span className="brand-text font-weight-light">Admin/Researcher</span>
+                    <span className="brand-text font-weight-light">{user && user.user && user.user.userType}</span>
                 </span>
                 {/* Sidebar */}
                 <div className="sidebar">
                     {/* Sidebar user (optional) */}
                     <div className="user-panel mt-3 pb-3 mb-3 d-flex">
                         <div className="image">
-                            <img style={{ width: 34, height: 34 }} src={givenImage} className="img-profile rounded-circle" />
+                            <img style={{ width: 34, height: 34 }} src={user && user.user ? user.user.image.startsWith('https://') ? user.user.image : `${backendUrl}/${user.user.image}` : givenImage} className="img-profile rounded-circle" />
                         </div>
                         <div className="info">
-                            <a href="#" className="d-block" data-toggle="modal" data-target="#profile" style={{ cursor: 'pointer' }}>Shelo Mora Paglinawan</a>
+                            <a href="#" className="d-block" data-toggle="modal" data-target="#profile" style={{ cursor: 'pointer' }}>{user && user.user && user.user.fullname}</a>
                         </div>
                     </div>
                     {/* Sidebar Menu */}

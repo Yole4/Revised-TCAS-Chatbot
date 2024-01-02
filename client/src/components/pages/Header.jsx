@@ -11,10 +11,11 @@ import { AiOutlineCloseCircle } from "react-icons/ai";
 import givenImage from "../assets/images/given image.png";
 import { useContext } from 'react';
 import { AuthContext } from '../Context/AuthContext';
+import { backendUrl } from '../../utils/Services';
 
 function Header() {
 
-    const {user, isLogout, setIsLogout, handleLogout} = useContext(AuthContext);
+    const { user, isLogout, setIsLogout, handleLogout } = useContext(AuthContext);
 
     const location = useLocation();
     const navigate = useNavigate();
@@ -76,8 +77,8 @@ function Header() {
 
                             <li className="nav-item dropdown no-arrow">
                                 <a className="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <span className="mr-2 d-none d-lg-inline text-gray-600 small">Shelo Mora Paglinawan</span>
-                                    <img style={{ width: 25, height: 25 }} className="img-profile rounded-circle" src={givenImage} />
+                                    <span className="mr-2 d-none d-lg-inline text-gray-600 small">{user && user.user && user.user.fullname}</span>
+                                    <img style={{ width: 25, height: 25 }} className="img-profile rounded-circle" src={user && user.user ? user.user.image.startsWith('https://') ? user.user.image : `${backendUrl}/${user.user.image}` : givenImage} />
                                 </a>
 
                                 <div className="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
@@ -164,9 +165,11 @@ function Header() {
                             </li>
 
 
-                            <li className="nav-item" Style={{ cursor: 'pointer' }} onClick={() => navigate('/new-project')}>
-                                <span className={location.pathname === '/new-project' ? 'nav-link active' : 'nav-link'} style={{ cursor: 'pointer' }}>Submit New Project</span>
-                            </li>
+                            {user && user.user && user.user.userType === "Admin" && (
+                                <li className="nav-item" Style={{ cursor: 'pointer' }} onClick={() => navigate('/new-project')}>
+                                    <span className={location.pathname === '/new-project' ? 'nav-link active' : 'nav-link'} style={{ cursor: 'pointer' }}>Submit New Project</span>
+                                </li>
+                            )}
                         </ul>
                     </div>
                     {/* Right navbar links */}
@@ -246,7 +249,7 @@ function Header() {
                             <AiOutlineCloseCircle size={30} />
                         </div>
                         <div style={{ textAlign: 'center' }}>
-                            <img src={givenImage} style={{ borderRadius: '50%', height: '150px', width: '150px' }} />
+                            <img src={user && user.user ? user.user.image.startsWith('https://') ? user.user.image : `${backendUrl}/${user.user.image}` : givenImage} style={{ borderRadius: '50%', height: '150px', width: '150px' }} />
                             <label htmlFor="uploadPhoto" style={{ marginLeft: '-40px', cursor: 'pointer', zIndex: '3', color: 'white', position: 'absolute', marginTop: '110px' }}>
                                 <VscDeviceCamera size={30} style={{ backgroundColor: 'rgb(71, 71, 98)', padding: '3px', borderRadius: '50%' }} />
                                 <input type="file" id="uploadPhoto" style={{ display: 'none' }} />
@@ -255,10 +258,10 @@ function Header() {
                         </div>
                         <div style={{ textAlign: 'center' }}>
                             <div>
-                                <h2 style={{ fontSize: '20px' }}>Shelo Mora Paglinawan</h2>
+                                <h2 style={{ fontSize: '20px' }}>{user && user.user && user.user.fullname}</h2>
                             </div>
                             <div style={{ marginTop: '10px' }}>
-                                <span>Admin/Researcher</span>
+                                <span>{user && user.user && user.user.userType}</span>
                             </div><br />
                         </div>
                         <hr />
