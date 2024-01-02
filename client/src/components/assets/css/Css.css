@@ -59,6 +59,14 @@
     z-index: -1;
 }
 
+.login-box{
+    width: 450px;
+    overflow: auto;
+    margin-top: 20px;
+    margin-left: 50%;
+    transform: translateX(-50%);
+}
+
 .user-img {
     position: absolute;
     height: 27px;
@@ -464,6 +472,10 @@
 /* ---------------------------------- 600px ------------------------------ */
 
 @media screen and (max-width: 500px) {
+    .login-box{
+        width: 100%;
+    }
+
     .explore {
         width: 89%;
     }

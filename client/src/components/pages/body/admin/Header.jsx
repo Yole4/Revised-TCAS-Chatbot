@@ -6,12 +6,15 @@ import givenImage from "../../../assets/images/given image.png";
 // react icons 
 import { AiTwotoneHome, AiOutlineCloseCircle } from "react-icons/ai";
 import { VscDeviceCamera } from "react-icons/vsc";
+import { useContext } from 'react';
+import { AuthContext } from '../../../Context/AuthContext';
 
 function Header() {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const [isLogout, setIsLogout] = useState(false);
+    const {user, isLogout, setIsLogout, handleLogout} = useContext(AuthContext);
+
     const [isChangePassword, setIsChangePassword] = useState(false);
     const [isProfile, setIsProfile] = useState(false);
     return (
@@ -148,7 +151,7 @@ function Header() {
 
                         <div style={{ justifyContent: 'space-between', marginTop: '25px', display: 'flex' }}>
                             <button className='btn btn-danger' type='button' style={{ width: '80px' }} onClick={() => setIsLogout(false)}>No</button>
-                            <button className='btn btn-primary' type='submit' style={{ width: '80px' }}>Yes</button>
+                            <button className='btn btn-primary' type='submit' style={{ width: '80px' }} onClick={() => handleLogout()}>Yes</button>
                         </div>
                     </div>
                 </div>

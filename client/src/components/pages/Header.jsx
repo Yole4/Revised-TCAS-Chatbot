@@ -9,18 +9,18 @@ import { VscDeviceCamera } from "react-icons/vsc";
 import { AiOutlineCloseCircle } from "react-icons/ai";
 
 import givenImage from "../assets/images/given image.png";
+import { useContext } from 'react';
+import { AuthContext } from '../Context/AuthContext';
 
 function Header() {
+
+    const {user, isLogout, setIsLogout, handleLogout} = useContext(AuthContext);
 
     const location = useLocation();
     const navigate = useNavigate();
     const [onSearch, setOnSearch] = useState(false);
-    const [isLogin, setIsLogin] = useState(true);
     const [isChangePassword, setIsChangePassword] = useState(false);
-    const [isLogout, setIsLogout] = useState(false);
     const [isProfile, setIsProfile] = useState(false);
-
-    const [userType, setUserType] = useState('Admin'); // partial
 
     return (
         <>
@@ -45,7 +45,7 @@ function Header() {
                         </div>
                     </li>
 
-                    {isLogin ? (
+                    {user ? (
                         <>
                             <li className="nav-item dropdown">
                                 <a className="nav-link" data-toggle="dropdown" href="#">
@@ -84,7 +84,7 @@ function Header() {
                                     <a className="dropdown-item" data-toggle="modal" data-target="#profile" style={{ cursor: 'pointer' }} onClick={() => setIsProfile(true)}><i className="fas fa-user fa-sm fa-fw mr-2 text-gray-400" />
                                         Profile
                                     </a>
-                                    {userType === "Admin" && (
+                                    {user && user.user && user.user.userType === "Admin" && (
                                         <a className="dropdown-item" data-toggle="modal" onClick={() => navigate('/dashboard')} style={{ cursor: 'pointer' }}><i className="nav-icon fas fa-tachometer-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                                             Dashboard
                                         </a>
@@ -102,7 +102,7 @@ function Header() {
                     ) : (
                         < li className="nav-item dropdown no-arrow right-margin" style={{ marginRight: '-10px' }} onClick={() => navigate('/login')}>
                             <a className="nav-link" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span className="mr-2 d-none d-lg-inline text-gray-600 small">Signin</span>
+                                <span className="mr-2 d-lg-inline text-gray-600 small">Signin</span>
                                 {/* <img style={{ width: 25, height: 25 }} className="img-profile rounded-circle" /> */}
                             </a>
                         </li>
@@ -232,7 +232,7 @@ function Header() {
 
                         <div style={{ justifyContent: 'space-between', marginTop: '25px', display: 'flex' }}>
                             <button className='btn btn-danger' type='button' style={{ width: '80px' }} onClick={() => setIsLogout(false)}>No</button>
-                            <button className='btn btn-primary' type='submit' style={{ width: '80px' }}>Yes</button>
+                            <button className='btn btn-primary' type='submit' style={{ width: '80px' }} onClick={() => handleLogout()}>Yes</button>
                         </div>
                     </div>
                 </div>

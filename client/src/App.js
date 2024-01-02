@@ -1,6 +1,7 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import './components/assets/css/Css.css';
+import './components/assets/css/Chatbot.css';
 
 import Login from "./components/pages/Login";
 import Home from "./components/pages/body/Home";
@@ -16,26 +17,41 @@ import SchoolYear from "./components/pages/body/admin/SchoolYear";
 import Users from "./components/pages/body/admin/Users";
 import Settings from "./components/pages/body/admin/Settings";
 
+// undefine 404
+import Undefine from "./components/pages/404/Undefine";
+
+// chatbot
+import Chatbot from "./components/pages/body/chatbot/Chatbot";
+
+// require auth context
+import { useContext } from "react";
+import { AuthContext } from "./components/Context/AuthContext";
+
 function App() {
+
+  const {user} = useContext(AuthContext);
+  
   return (
     <>
-      <Router>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/projects" element={<Projects />} />
-          <Route path="/new-project" element={<SubmitProject />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/archive-list" element={<Archive />} />
-          <Route path="/request-user" element={<UserRequest />} />
-          <Route path="/department" element={<Department />} />
-          <Route path="/courses" element={<Courses />} />
-          <Route path="/school-year" element={<SchoolYear />} />
-          <Route path="/users" element={<Users />} />
-          <Route path="/settings" element={<Settings />} />
-        </Routes>
-      </Router>
+      {user && <Chatbot />}
+
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={ user? <Home /> : <Login />} />
+        <Route path="/projects" element={<Projects />} />
+        <Route path="/new-project" element={user ? user.user && user.user.userType === "Admin" ? <SubmitProject /> : <Home /> : <Login />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/dashboard" element={user ? user.user && user.user.userType === "Admin" ? <Dashboard /> : <Home /> : <Login />} />
+        <Route path="/archive-list" element={user ? user.user && user.user.userType === "Admin" ? <Archive /> : <Home /> : <Login />} />
+        <Route path="/request-user" element={ user? user.user && user.user.userType === "Admin" ? <UserRequest /> : <Home /> : <Login />} />
+        <Route path="/department" element={ user? user.user && user.user.userType === "Admin" ? <Department /> : <Home /> : <Login />} />
+        <Route path="/courses" element={ user? user.user && user.user.userType === "Admin" ? <Courses /> : <Home /> : <Login />} />
+        <Route path="/school-year" element={ user? user.user && user.user.userType === "Admin" ? <SchoolYear /> : <Home /> : <Login />} />
+        <Route path="/users" element={ user ? user.user && user.user.userType === "Admin" ? <Users /> : <Home /> : <Login />} />
+        <Route path="/settings" element={ user? user.user && user.user.userType === "Admin" ? <Settings /> : <Home /> : <Login />} />
+
+        <Route path="*" element={<Undefine />} />
+      </Routes>
     </>
   );
 }
