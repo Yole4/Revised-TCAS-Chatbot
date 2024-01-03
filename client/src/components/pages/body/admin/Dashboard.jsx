@@ -13,6 +13,7 @@ import { FiArchive } from "react-icons/fi";
 import { TbArchiveOff } from "react-icons/tb";
 
 function Dashboard() {
+  document.title = "Dashboard";
 
   const navigate = useNavigate();
 

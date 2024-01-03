@@ -3,6 +3,7 @@ import Header from './Header'
 import Sidebar from './Sidebar'
 
 function Department() {
+    document.title = "Department List";
 
     const [isAddDepartment, setIsAddDepartment] = useState(false);
     const [isEditDepartment, setIsEditDepartment] = useState(false);

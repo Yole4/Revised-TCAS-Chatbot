@@ -3,6 +3,7 @@ import Header from './Header'
 import Sidebar from './Sidebar'
 
 function Courses() {
+    document.title = "Courses";
 
     const [isAddCourses, setIsAddCourses] = useState(false);
     const [isEditCourses, setIsEditCourses] = useState(false);

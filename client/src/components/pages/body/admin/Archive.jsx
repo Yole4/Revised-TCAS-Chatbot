@@ -6,6 +6,7 @@ import Sidebar from './Sidebar';
 import { ImSearch } from "react-icons/im";
 
 function Archive() {
+    document.title = "Archive List";
 
     const [isEditArchive, setIsEditArchive] = useState(false);
     const [isDelete, setIsDelete] = useState(false);

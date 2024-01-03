@@ -3,6 +3,7 @@ import Header from './Header'
 import Sidebar from './Sidebar'
 
 function SchoolYear() {
+    document.title = "School Year List";
 
     const [isAddSchoolYear, setIsAddSchoolYear] = useState(false);
     const [isEditSchoolYear, setIsEditSchoolYear] = useState(false);

@@ -6,6 +6,7 @@ import Sidebar from './Sidebar'
 import { ImSearch } from "react-icons/im";
 
 function Users() {
+    document.title = "Users";
 
     const [isEditUser, setIsEditUser] = useState(false);
     const [isDelete, setIsDelete] = useState(false);
