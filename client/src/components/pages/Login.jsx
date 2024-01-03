@@ -9,7 +9,7 @@ import { useEffect } from 'react';
 
 function Login() {
 
-    const { isLoading, setIsLoading, errorResponse,
+    const { isLoading, setIsLoading, errorResponse, setErrorResponse,
         userLoginData, setUserLoginData, isLoginGoogle, setIsLoginGoogle,
         userRegisterData, setUserRegisterData, isRegisterGoogle, setIsRegisterGoogle,
         handleRegister, registerInfo, setRegisterInfo,
@@ -29,6 +29,7 @@ function Login() {
             setResponseCountDown(true);
             setTimeout(() => {
                 setResponseCountDown(false);
+                setErrorResponse(null);
             }, 5000);
         }
     }, [errorResponse]);

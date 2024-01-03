@@ -1,11 +1,14 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import Header from './Header'
 import Sidebar from './Sidebar';
 
 import logo from "../../../assets/images/logo.png";
 import jose from "../../../assets/images/jose.jpg";
+import { PublicContext } from '../../../Context/PublicContext';
 
 function Settings() {
+    document.title = "System Settings";
+    
     return (
         <>
             <Header />

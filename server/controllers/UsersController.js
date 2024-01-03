@@ -262,4 +262,166 @@ const registerGoogle = async (req, res) => {
     }
 }
 
-module.exports = { protected, registerUser, loginUser, loginGoogle, registerGoogle };
+// auto image upload
+const autoImageUpload = async (req, res) => {
+    const { userId } = req.body;
+
+    const validationRules = [
+        { validator: validator.isLength, options: { min: 1, max: 255 } },
+    ];
+
+    const sanitizeUserId = sanitizeAndValidate(userId, validationRules);
+
+    if (!sanitizeUserId) {
+        res.status(401).json({ message: "Invalid Input!" });
+    }
+    else {
+        const originalFileName = req.file.originalname;
+        const uniqueFileName = `${Date.now()}_+_${originalFileName}`;
+        const uniqueFilePath = `assets/image upload/${uniqueFileName}`;
+
+        const typeMime = mime.lookup(originalFileName);
+
+        if ((typeMime === 'image/png') || (typeMime === 'image/jpeg')) {
+            fs.rename(req.file.path, uniqueFilePath, (err) => {
+                if (err) {
+                    res.status(401).json({ message: "Error to upload file" });
+                } else {
+                    const sanitizedFileName = sanitizeHtml(req.file.originalname); // Sanitize HTML content
+                    if (!validator.isLength(sanitizedFileName, { min: 1, max: 255 })) {
+                        return res.status(401).send({ message: "Invalid File Name!" });
+                    }
+                    else {
+                        const insert = `UPDATE users SET image = ? WHERE id = ?`;
+                        db.query(insert, [uniqueFilePath, sanitizeUserId], (error, results) => {
+                            if (error) {
+                                res.status(401).json({ message: "Server side errors!" });
+                            } else {
+                                res.status(200).json({ message: "Profile image changed!" });
+                            }
+                        });
+                    }
+                }
+            });
+        }
+        else {
+            res.status(401).json({ message: "Invalid Image Type!" });
+        }
+    }
+}
+
+// get user credentials
+const getUserCredentials = async (req, res) => {
+    const { userId } = req.body;
+
+    const validationRules = [
+        { validator: validator.isLength, options: { min: 1, max: 50 } },
+    ];
+
+    const sanitizeUserId = sanitizeAndValidate(userId.toString(), validationRules);
+
+    if (!sanitizeUserId) {
+        res.status(401).json({ message: "Invalid Input!" });
+    } else {
+        const fetchUserCredentials = `SELECT * FROM users WHERE id = ? AND isDelete = ?`;
+        db.query(fetchUserCredentials, [userId, "not"], (error, results) => {
+            if (error) {
+                res.status(401).json({ message: "Server side error!" });
+            } else {
+                res.status(200).json({ message: results[0] });
+            }
+        });
+    }
+}
+
+// change password
+const changePassword = async (req, res) => {
+    const { userId, changePasswordInfo } = req.body;
+
+    const validationRules = [
+        { validator: validator.isLength, options: { min: 1, max: 255 } },
+    ];
+
+    const sanitizeUserId = sanitizeAndValidate(userId, validationRules);
+    const sanitizeEmail = sanitizeAndValidate(changePasswordInfo.email, validationRules);
+    const sanitizeNewPassword = sanitizeAndValidate(changePasswordInfo.newPassword, validationRules);
+    const sanitizeConfirmPassword = sanitizeAndValidate(changePasswordInfo.confirmPassword, validationRules);
+
+    if (!sanitizeUserId || !sanitizeEmail || !sanitizeNewPassword || !sanitizeConfirmPassword) {
+        res.status(401).json({ message: "Invalid Input!" });
+    } else {
+        if (sanitizeEmail.length >= 5) {
+            if (sanitizeNewPassword === sanitizeConfirmPassword) {
+                if (sanitizeNewPassword.length >= 7 && sanitizeNewPassword.length <= 20) {
+                    // select password
+                    const select = `SELECT * FROM users WHERE id = ? AND isDelete = ?`;
+                    db.query(select, [sanitizeUserId, 'not'], (error, results) => {
+                        if (error) {
+                            res.status(401).json({ message: "Server side error!" });
+                        } else {
+                            if (results.length > 0) {
+                                // get db password
+                                const dbPassword = results[0].password;
+
+                                // hash new Password
+                                const hashedNewPassword = crypto.createHash('sha256').update(sanitizeNewPassword).digest('hex');
+
+                                // check email if already exist
+                                const checkEmail = `SELECT * FROM users WHERE email = ? AND id != ?`;
+                                db.query(checkEmail, [sanitizeEmail, sanitizeUserId], (error, results) => {
+                                    if (error) {
+                                        res.status(401).json({ message: "Server side error!" });
+                                    } else {
+                                        if (results.length > 0) {
+                                            res.status(401).json({ message: "Email Already Exist!" });
+                                        } else {
+                                            if (dbPassword.length === 0) {
+                                                // new pass
+                                                const insertNewPassword = `UPDATE users SET password = ? WHERE id = ?`;
+                                                db.query(insertNewPassword, [hashedNewPassword, sanitizeUserId], (error, results) => {
+                                                    if (error) {
+                                                        res.status(401).json({message: "Server side error!"});
+                                                    }else{
+                                                        res.status(200).json({ message: "User credentials updated successfully!" });
+                                                    }
+                                                })
+                                            }
+                                            else {
+                                                // hash current password
+                                                const hashedPassword = crypto.createHash('sha256').update(changePasswordInfo.currentPassword).digest('hex');
+
+                                                // check the current password and new password
+                                                if (dbPassword === hashedPassword) {
+                                                    const update = `UPDATE users SET password = ? WHERE id = ?`;
+                                                    db.query(update, [hashedNewPassword, sanitizeUserId], (error, results) => {
+                                                        if (error) {
+                                                            res.status(401).json({ message: "Server side error!" });
+                                                        } else {
+                                                            res.status(200).json({ message: "User credentials updated successfully!" });
+                                                        }
+                                                    });
+                                                } else {
+                                                    res.status(401).json({ message: "Invalid Current Password!" });
+                                                }
+                                            }
+                                        }
+                                    }
+                                })
+                            } else {
+                                res.status(401).json({ message: "Something went wrong!" });
+                            }
+                        }
+                    });
+                } else {
+                    res.status(401).json({ message: "New password must have 7 to 20 characters!" });
+                }
+            } else {
+                res.status(401).json({ message: "New password and confirm password not match!" });
+            }
+        } else {
+            res.status(401).json({ message: "Email must have 5 to 20 characters!" });
+        }
+    }
+}
+
+module.exports = { protected, registerUser, loginUser, loginGoogle, registerGoogle, autoImageUpload, getUserCredentials, changePassword };

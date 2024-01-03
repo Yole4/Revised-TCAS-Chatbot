@@ -18,7 +18,7 @@ import { backendUrl } from '../../../../utils/Services';
 
 function Sidebar() {
 
-    const {user} = useContext(AuthContext);
+    const {user, userCredentials} = useContext(AuthContext);
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -30,14 +30,14 @@ function Sidebar() {
                 {/* Brand Logo */}
                 <span className="brand-link span-cursor" style={{ width: '190px' }}>
                     <img src={logo} alt="AdminLTE Logo" className="brand-image img-circle elevation-3" style={{ opacity: '.8' }} />
-                    <span className="brand-text font-weight-light">{user && user.user && user.user.userType}</span>
+                    <span className="brand-text font-weight-light">{userCredentials && userCredentials.user_type}</span>
                 </span>
                 {/* Sidebar */}
                 <div className="sidebar">
                     {/* Sidebar user (optional) */}
                     <div className="user-panel mt-3 pb-3 mb-3 d-flex">
                         <div className="image">
-                            <img style={{ width: 34, height: 34 }} src={user && user.user ? user.user.image.startsWith('https://') ? user.user.image : `${backendUrl}/${user.user.image}` : givenImage} className="img-profile rounded-circle" />
+                            <img style={{ width: 34, height: 34 }} src={userCredentials ? userCredentials.image.startsWith('https://') ? userCredentials.image : `${backendUrl}/${userCredentials.image}` : givenImage} className="img-profile rounded-circle" />
                         </div>
                         <div className="info">
                             <a href="#" className="d-block" data-toggle="modal" data-target="#profile" style={{ cursor: 'pointer' }}>{user && user.user && user.user.fullname}</a>

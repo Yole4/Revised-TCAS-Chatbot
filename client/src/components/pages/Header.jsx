@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import logo from '../assets/images/logo.png';
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -12,16 +12,31 @@ import givenImage from "../assets/images/given image.png";
 import { useContext } from 'react';
 import { AuthContext } from '../Context/AuthContext';
 import { backendUrl } from '../../utils/Services';
+import { PublicContext } from '../Context/PublicContext';
 
 function Header() {
 
-    const { user, isLogout, setIsLogout, handleLogout } = useContext(AuthContext);
+    const { user, isLoading, userCredentials, isLogout, setIsLogout, handleLogout, setAutoImage, isProfile, setIsProfile, errorResponse, setErrorResponse,
+        changePasswordInfo, setChangePasswordInfo, handleChangePassword, isChangePassword, setIsChangePassword
+    } = useContext(AuthContext);
+
+    const {publicLoading, settingsData} = useContext(PublicContext);
 
     const location = useLocation();
     const navigate = useNavigate();
     const [onSearch, setOnSearch] = useState(false);
-    const [isChangePassword, setIsChangePassword] = useState(false);
-    const [isProfile, setIsProfile] = useState(false);
+
+    // reset response after 5 seconds
+    const [responseCountDown, setResponseCountDown] = useState(false);
+    useEffect(() => {
+        if (errorResponse) {
+            setResponseCountDown(true);
+            setTimeout(() => {
+                setResponseCountDown(false);
+                setErrorResponse(null);
+            }, 5000);
+        }
+    }, [errorResponse]);
 
     return (
         <>
@@ -29,7 +44,7 @@ function Header() {
                 {/* Left navbar links */}
                 <ul className="navbar-nav">
                     <li className="nav-item d-sm-inline-block">
-                        <span className="mr-2  text-white"><i className="fa fa-phone mr-1"></i> 234324234</span>
+                        <span className="mr-2  text-white"><i className="fa fa-phone mr-1"></i> {settingsData && settingsData.contact_number}</span>
                     </li>
                 </ul>
                 {/* Right navbar links */}
@@ -77,15 +92,15 @@ function Header() {
 
                             <li className="nav-item dropdown no-arrow">
                                 <a className="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <span className="mr-2 d-none d-lg-inline text-gray-600 small">{user && user.user && user.user.fullname}</span>
-                                    <img style={{ width: 25, height: 25 }} className="img-profile rounded-circle" src={user && user.user ? user.user.image.startsWith('https://') ? user.user.image : `${backendUrl}/${user.user.image}` : givenImage} />
+                                    <span className="mr-2 d-none d-lg-inline text-gray-600 small">{userCredentials && userCredentials.fullname}</span>
+                                    <img style={{ width: 25, height: 25 }} className="img-profile rounded-circle" src={userCredentials ? userCredentials.image.startsWith('https://') ? userCredentials.image : `${backendUrl}/${userCredentials.image}` : givenImage} />
                                 </a>
 
                                 <div className="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
                                     <a className="dropdown-item" data-toggle="modal" data-target="#profile" style={{ cursor: 'pointer' }} onClick={() => setIsProfile(true)}><i className="fas fa-user fa-sm fa-fw mr-2 text-gray-400" />
                                         Profile
                                     </a>
-                                    {user && user.user && user.user.userType === "Admin" && (
+                                    {userCredentials && userCredentials.user_type === "Admin" && (
                                         <a className="dropdown-item" data-toggle="modal" onClick={() => navigate('/dashboard')} style={{ cursor: 'pointer' }}><i className="nav-icon fas fa-tachometer-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                                             Dashboard
                                         </a>
@@ -115,7 +130,7 @@ function Header() {
                 <div className="container">
                     <div className="navbar-brand" style={{ cursor: 'pointer' }} onClick={() => navigate('/')}>
                         <img src={logo} alt="Site Logo" className="brand-image img-circle elevation-3" style={{ opacity: '.8', height: '40px', marginRight: '10px' }} />
-                        <span>BSCS</span>
+                        <span>{settingsData && settingsData.system_short_name}</span>
                     </div>
                     <button className="navbar-toggler order-1" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
                         <span className="navbar-toggler-icon" />
@@ -165,7 +180,7 @@ function Header() {
                             </li>
 
 
-                            {user && user.user && user.user.userType === "Admin" && (
+                            {userCredentials && userCredentials.user_type === "Admin" && (
                                 <li className="nav-item" Style={{ cursor: 'pointer' }} onClick={() => navigate('/new-project')}>
                                     <span className={location.pathname === '/new-project' ? 'nav-link active' : 'nav-link'} style={{ cursor: 'pointer' }}>Submit New Project</span>
                                 </li>
@@ -190,25 +205,27 @@ function Header() {
                             <span>Change Password</span>
                         </div>
                         <hr />
-                        <form >
+                        <form onSubmit={handleChangePassword}>
                             <div className='form-div'>
-                                <label htmlFor="">Username</label>
-                                <input type="text" className='form-control' placeholder='Username' required />
+                                <label htmlFor="">Email</label>
+                                <input type="email" className='form-control' value={changePasswordInfo.email} onChange={(e) => setChangePasswordInfo((prev) => ({ ...prev, email: e.target.value }))} placeholder='Email' required />
                             </div>
 
-                            <div style={{ marginTop: '15px' }}>
-                                <label htmlFor="">Current Password</label>
-                                <input type="password" className='form-control' placeholder='*********' required />
-                            </div>
+                            {userCredentials && userCredentials.password.length > 0 && (
+                                <div style={{ marginTop: '15px' }}>
+                                    <label htmlFor="">Current Password</label>
+                                    <input type="password" className='form-control' value={changePasswordInfo.currentPassword} onChange={(e) => setChangePasswordInfo((prev) => ({ ...prev, currentPassword: e.target.value }))} placeholder='*********' required />
+                                </div>
+                            )}
 
                             <div style={{ marginTop: '15px' }}>
                                 <label htmlFor="">New Password</label>
-                                <input type="password" className='form-control' placeholder='*********' required />
+                                <input type="password" className='form-control' value={changePasswordInfo.newPassword} onChange={(e) => setChangePasswordInfo((prev) => ({ ...prev, newPassword: e.target.value }))} placeholder='*********' required />
                             </div>
 
                             <div style={{ marginTop: '15px' }}>
                                 <label htmlFor="">Confirm Password</label>
-                                <input type="password" className='form-control' placeholder='*********' required />
+                                <input type="password" className='form-control' value={changePasswordInfo.confirmPassword} onChange={(e) => setChangePasswordInfo((prev) => ({ ...prev, confirmPassword: e.target.value }))} placeholder='*********' required />
                             </div>
 
                             <div style={{ justifyContent: 'space-between', marginTop: '25px', display: 'flex' }}>
@@ -249,25 +266,41 @@ function Header() {
                             <AiOutlineCloseCircle size={30} />
                         </div>
                         <div style={{ textAlign: 'center' }}>
-                            <img src={user && user.user ? user.user.image.startsWith('https://') ? user.user.image : `${backendUrl}/${user.user.image}` : givenImage} style={{ borderRadius: '50%', height: '150px', width: '150px' }} />
+                            <img src={userCredentials ? userCredentials.image.startsWith('https://') ? userCredentials.image : `${backendUrl}/${userCredentials.image}` : givenImage} style={{ borderRadius: '50%', height: '150px', width: '150px' }} />
                             <label htmlFor="uploadPhoto" style={{ marginLeft: '-40px', cursor: 'pointer', zIndex: '3', color: 'white', position: 'absolute', marginTop: '110px' }}>
                                 <VscDeviceCamera size={30} style={{ backgroundColor: 'rgb(71, 71, 98)', padding: '3px', borderRadius: '50%' }} />
-                                <input type="file" id="uploadPhoto" style={{ display: 'none' }} />
-                                {/* <input type="file" id="uploadPhoto" onChange={(e) => setAutoImage(e.target.files[0])} style={{ display: 'none' }} /> */}
+                                <input type="file" id="uploadPhoto" accept='.png, .jpg' onChange={(e) => setAutoImage(e.target.files[0])} style={{ display: 'none' }} />
                             </label>
                         </div>
                         <div style={{ textAlign: 'center' }}>
                             <div>
-                                <h2 style={{ fontSize: '20px' }}>{user && user.user && user.user.fullname}</h2>
+                                <h2 style={{ fontSize: '20px' }}>{userCredentials && userCredentials.fullname}</h2>
                             </div>
                             <div style={{ marginTop: '10px' }}>
-                                <span>{user && user.user && user.user.userType}</span>
+                                <span>{userCredentials && userCredentials.user_type}</span>
                             </div><br />
                         </div>
                         <hr />
                         <div className="form-control" style={{ textAlign: 'center' }}>
                             <span>Other profile view</span>
                         </div>
+                    </div>
+                </div>
+            )}
+
+            {isLoading && publicLoading && (
+                <div className="popup">
+                    <button class="btn btn-primary" type="button" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} disabled>
+                        <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true" style={{ marginRight: '10px' }}></span>
+                        Loading...
+                    </button>
+                </div>
+            )}
+
+            {responseCountDown && errorResponse && (
+                <div className='error-respond' style={{ backgroundColor: errorResponse && !errorResponse.isError ? '#7b4ae4' : '#fb7d60' }}>
+                    <div>
+                        <h5>{errorResponse && errorResponse.message}</h5>
                     </div>
                 </div>
             )}

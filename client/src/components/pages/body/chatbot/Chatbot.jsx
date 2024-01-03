@@ -1,10 +1,13 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../../../Context/AuthContext';
 
 function Chatbot() {
     const navigate = useNavigate();
+
+    const {userCredentials} = useContext(AuthContext);
 
     const [isChatbot, setIsChatbot] = useState(false);
     const [messages, setMessages] = useState([]);
@@ -77,7 +80,7 @@ function Chatbot() {
                         <ul className="chatbox" ref={chatRef}>
                             <li className="chat incoming">
                                 <span className="material-symbols-outlined">smart_toy</span>
-                                <p>Hi Shelo Mora Paglinawan 👋 How can I help you today?</p>
+                                <p>Hi {userCredentials && userCredentials.fullname} 👋 How can I help you today?</p>
                             </li>
                             {messages && messages.map(item => (
                                 <>

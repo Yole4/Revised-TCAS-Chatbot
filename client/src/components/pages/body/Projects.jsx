@@ -1,7 +1,17 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import Header from '../Header';
+import { PublicContext } from '../../Context/PublicContext';
+import { backendUrl } from '../../../utils/Services';
+import { useNavigate } from 'react-router-dom';
 
 function Projects() {
+
+    const navigate = useNavigate();
+
+    const {archiveFiles, publicLoading} = useContext(PublicContext);
+
+    document.title = "Projects";
+
     return (
         <>
             <Header />
@@ -17,7 +27,7 @@ function Projects() {
                                         <h2>Archive List</h2>
                                         <hr className="bg-navy" />
                                         <div className="list-group">
-                                            {/* {archiveList && archiveList.map(item => (
+                                            {archiveFiles && archiveFiles.map(item => (
                                                 <div onClick={() => navigate(`/view-project/${1000 + item.id}`)} className="text-decoration-none text-dark list-group-item list-group-item-action" style={{ cursor: 'pointer' }}>
                                                     <div className="row">
                                                         <div className="col-lg-4 col-md-5 col-sm-12 text-center">
@@ -30,20 +40,7 @@ function Projects() {
                                                         </div>
                                                     </div>
                                                 </div>
-                                            ))} */}
-
-                                            <div className="text-decoration-none text-dark list-group-item list-group-item-action" style={{ cursor: 'pointer' }}>
-                                                <div className="row">
-                                                    <div className="col-lg-4 col-md-5 col-sm-12 text-center">
-                                                        <img src="" className="banner-img img-fluid bg-gradient-dark" alt="Banner Image" />
-                                                    </div>
-                                                    <div className="col-lg-8 col-md-7 col-sm-12">
-                                                        <h3 className="text-navy"><b>Project title</b></h3>
-                                                        <small className="text-muted">By <b className="text-info">Members</b></small>
-                                                        <p className="truncate">{("Abstract slice something").slice(0, 480) + '...'}</p>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            ))}
                                         </div>
                                     </div>
                                     <div className="card-footer clearfix rounded-0">

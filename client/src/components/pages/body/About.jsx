@@ -1,7 +1,13 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import Header from '../Header';
+import { PublicContext } from '../../Context/PublicContext';
 
 function About() {
+
+    const {settingsData, publicLoading} = useContext(PublicContext);
+
+    document.title = "About Us";
+
     return (
         <>
             <Header />
@@ -20,11 +26,11 @@ function About() {
                                         <div className="card-body rounded-0">
                                             <dl>
                                                 <dt className="text-muted"><i className="fa fa-envelope" /> Email</dt>
-                                                <dd className="pr-4">Your@gmail.com</dd>
+                                                <dd className="pr-4">{settingsData && settingsData.email}</dd>
                                                 <dt className="text-muted"><i className="fa fa-phone" /> Contact #</dt>
-                                                <dd className="pr-4">234324324</dd>
+                                                <dd className="pr-4">{settingsData && settingsData.contact_number}</dd>
                                                 <dt className="text-muted"><i className="fa fa-map-marked-alt" /> Location</dt>
-                                                <dd className="pr-4">My Location</dd>
+                                                <dd className="pr-4">{settingsData && settingsData.address}</dd>
                                             </dl>
                                         </div>
                                     </div>
@@ -37,7 +43,7 @@ function About() {
                                                 <hr className="bg-navy border-navy w-25 border-2" />
                                             </center>
                                             <div>
-                                                <p style={{ marginRight: 0, marginBottom: 15, marginLeft: 0, padding: 0, textAlign: 'justify' }}>About us message</p>
+                                                <p style={{ marginRight: 0, marginBottom: 15, marginLeft: 0, padding: 0, textAlign: 'justify' }}>{settingsData && settingsData.about_us}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -47,6 +53,15 @@ function About() {
                     </div>
                 </section>
             </div>
+
+            {publicLoading && (
+                <div className="popup">
+                    <button class="btn btn-primary" type="button" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} disabled>
+                        <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true" style={{ marginRight: '10px' }}></span>
+                        Loading...
+                    </button>
+                </div>
+            )}
         </>
     )
 }

@@ -7,6 +7,7 @@ const port = process.env.DB_PORT;
 
 // import routes
 const userRoutes = require('./routes/UsersRoutes');
+const publicRoutes = require('./routes/PublicRoutes');
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.use('/assets', express.static('assets'));
 
 // routers
 app.use('/api/users', userRoutes);
+app.use('/api/public', publicRoutes);
 
 app.get('/', (req, res) => {
     res.send("Welcome to TCAS Backend");

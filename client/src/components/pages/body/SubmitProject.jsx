@@ -3,6 +3,7 @@ import Header from '../Header';
 import givenImage from '../../assets/images/given image.png';
 
 function SubmitProject() {
+    document.title = "Submit New Project";
     return (
         <>
             <Header />

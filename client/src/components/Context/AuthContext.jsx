@@ -200,12 +200,119 @@ export const AuthContextProvider = ({ children }) => {
         }
     }
 
+    // ####################################################################      AUTO IMAGE UPLOAD      ######################################################################################
+    const [autoImage, setAutoImage] = useState([]);
+    const [isProfile, setIsProfile] = useState(false);
+
+    useEffect(() => {
+        if (autoImage.length === 0) {
+            // 
+        }
+        else {
+            const autoUpload = async (e) => {
+
+                setIsLoading(true);
+                setErrorResponse(null);
+
+                const formImage = new FormData();
+                formImage.append('image', autoImage);
+                formImage.append('userId', userId);
+
+                try {
+
+                    const response = await apostRequest(`${backendUrl}/api/users/image-upload`, formImage);
+
+                    setIsLoading(false);
+
+                    if (response.error) {
+                        setErrorResponse({ message: response.message, isError: true });
+                    } else {
+                        setErrorResponse({ message: response.message, isError: false });
+                        setMount(mount ? false : true);
+                    }
+                } catch (error) {
+                    setIsLoading(false);
+                    console.log("Error: ", error);
+                }
+            };
+            autoUpload();
+        }
+
+    }, [autoImage]);
+
+    // ####################################################################      CHANGE PASSWORD      ######################################################################################
+    const [changePasswordInfo, setChangePasswordInfo] = useState({
+        email: "",
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: ""
+    });
+    const [isChangePassword, setIsChangePassword] = useState(false);
+
+    const handleChangePassword = async (e) => {
+        e.preventDefault();
+
+        setIsLoading(true);
+        setErrorResponse(null);
+
+        try {
+            const response = await apostRequest(`${backendUrl}/api/users/change-password`, {changePasswordInfo, userId: userId.toString()});
+
+            setIsLoading(false);
+
+            if (response.error) {
+                setErrorResponse({message: response.message, isError: true});
+            }else{
+                setErrorResponse({message: response.message, isError: false});
+                setIsChangePassword(false);
+                setChangePasswordInfo((prev) => ({...prev, currentPassword: ""}));
+                setChangePasswordInfo((prev) => ({...prev, newPassword: ""}));
+                setChangePasswordInfo((prev) => ({...prev, confirmPassword: ""}));
+                setMount(mount ? false : true);
+            }
+        } catch (error) {
+            setIsLoading(false);
+            console.log("Error :", error);
+        }
+    }
+
+    // ####################################################################      GET USER CREDENTIALS      ######################################################################################
+    const [userCredentials, setUserCredentials] = useState(null);
+
+    useEffect(() => {
+        if (userId) {
+            const getCredentials = async (e) => {
+
+                setIsLoading(true);
+                setErrorResponse(null);
+
+                try {
+                    const response = await apostRequest(`${backendUrl}/api/users/get-user-credentials`, { userId });
+
+                    setIsLoading(false);
+
+                    if (response.error) {
+                        setErrorResponse({ message: response.message, isError: true });
+                    } else {
+                        setUserCredentials(response.message);
+                        setChangePasswordInfo((prev) => ({ ...prev, email: response.message.email }));
+                    }
+                } catch (error) {
+                    setIsLoading(false);
+                    console.log("Error: ", error);
+                }
+            };
+            getCredentials();
+        }
+    }, [mount, userId]);
 
     return <AuthContext.Provider value={{
         user,
+        userCredentials,
         isLoading,
         setIsLoading,
         errorResponse,
+        setErrorResponse,
         userLoginData,
         setUserLoginData,
         isLoginGoogle,
@@ -222,6 +329,15 @@ export const AuthContextProvider = ({ children }) => {
         handleLogin,
         isLogout,
         setIsLogout,
-        handleLogout
+        handleLogout,
+        autoImage,
+        setAutoImage,
+        isProfile,
+        setIsProfile,
+        changePasswordInfo,
+        setChangePasswordInfo,
+        handleChangePassword,
+        isChangePassword,
+        setIsChangePassword
     }}> {children} </AuthContext.Provider>
 }
