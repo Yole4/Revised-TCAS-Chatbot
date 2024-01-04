@@ -14,26 +14,30 @@ export const AuthContextProvider = ({ children }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [mount, setMount] = useState(false);
 
+    const token = localStorage.getItem('token');
+
     // ####################################################################      PROTECTED      ######################################################################################
     const [userId, setUserId] = useState(null);
     useEffect(() => {
-        setIsLoading(true);
+        if (token) {
+            setIsLoading(true);
 
-        const verifyToken = async (e) => {
-            const response = await agetRequest(`${backendUrl}/api/users/protected`);
+            const verifyToken = async (e) => {
+                const response = await agetRequest(`${backendUrl}/api/users/protected`);
 
-            setIsLoading(false);
+                setIsLoading(false);
 
-            if (response.error) {
-                setUser(null);
-                setErrorResponse({ message: response.message, isError: true });
-            } else {
-                setUserId(response.user.id);
-                setUser(response);
+                if (response.error) {
+                    setUser(null);
+                    setErrorResponse({ message: response.message, isError: true });
+                } else {
+                    setUserId(response.user.id);
+                    setUser(response);
+                }
             }
+            verifyToken();
         }
-        verifyToken();
-    }, [mount]);
+    }, [mount, token]);
 
     // ####################################################################      LOGOUT      ######################################################################################
     const [isLogout, setIsLogout] = useState(false);
@@ -256,23 +260,51 @@ export const AuthContextProvider = ({ children }) => {
         setErrorResponse(null);
 
         try {
-            const response = await apostRequest(`${backendUrl}/api/users/change-password`, {changePasswordInfo, userId: userId.toString()});
+            const response = await apostRequest(`${backendUrl}/api/users/change-password`, { changePasswordInfo, userId: userId.toString() });
 
             setIsLoading(false);
 
             if (response.error) {
-                setErrorResponse({message: response.message, isError: true});
-            }else{
-                setErrorResponse({message: response.message, isError: false});
+                setErrorResponse({ message: response.message, isError: true });
+            } else {
+                setErrorResponse({ message: response.message, isError: false });
                 setIsChangePassword(false);
-                setChangePasswordInfo((prev) => ({...prev, currentPassword: ""}));
-                setChangePasswordInfo((prev) => ({...prev, newPassword: ""}));
-                setChangePasswordInfo((prev) => ({...prev, confirmPassword: ""}));
+                setChangePasswordInfo((prev) => ({ ...prev, currentPassword: "" }));
+                setChangePasswordInfo((prev) => ({ ...prev, newPassword: "" }));
+                setChangePasswordInfo((prev) => ({ ...prev, confirmPassword: "" }));
                 setMount(mount ? false : true);
             }
         } catch (error) {
             setIsLoading(false);
             console.log("Error :", error);
+        }
+    }
+
+    // ####################################################################      UPDATE PROFILE NAME      ######################################################################################
+    const [isEditProfile, setIsEditProfile] = useState(false);
+    const [changeProfileInfo, setChangeProfileInfo] = useState("");
+
+    const handleChangeProfile = async (e) => {
+        e.preventDefault();
+
+        setIsLoading(true);
+        setErrorResponse(null);
+
+        try {
+            const response = await apostRequest(`${backendUrl}/api/users/update-profile`, { changeProfileInfo, userId: userId.toString() });
+
+            setIsLoading(false);
+
+            if (response.error) {
+                setErrorResponse({ message: response.message, isError: true });
+            } else {
+                setErrorResponse({ message: response.message, isError: false });
+                setIsEditProfile(false);
+                setMount(mount ? false : true);
+            }
+        } catch (error) {
+            setIsLoading(false);
+            console.log("Error: ", error);
         }
     }
 
@@ -296,6 +328,7 @@ export const AuthContextProvider = ({ children }) => {
                     } else {
                         setUserCredentials(response.message);
                         setChangePasswordInfo((prev) => ({ ...prev, email: response.message.email }));
+                        setChangeProfileInfo(response.message.fullname);
                     }
                 } catch (error) {
                     setIsLoading(false);
@@ -306,6 +339,7 @@ export const AuthContextProvider = ({ children }) => {
         }
     }, [mount, userId]);
 
+
     return <AuthContext.Provider value={{
         user,
         userCredentials,
@@ -313,6 +347,8 @@ export const AuthContextProvider = ({ children }) => {
         setIsLoading,
         errorResponse,
         setErrorResponse,
+        mount,
+        setMount,
         userLoginData,
         setUserLoginData,
         isLoginGoogle,
@@ -338,6 +374,12 @@ export const AuthContextProvider = ({ children }) => {
         setChangePasswordInfo,
         handleChangePassword,
         isChangePassword,
-        setIsChangePassword
+        setIsChangePassword,
+        isEditProfile,
+        setIsEditProfile,
+        handleChangeProfile,
+        changeProfileInfo,
+        setChangeProfileInfo,
+        userId
     }}> {children} </AuthContext.Provider>
 }

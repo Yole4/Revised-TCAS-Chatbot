@@ -5,14 +5,17 @@ import App from './App';
 import { BrowserRouter } from 'react-router-dom';
 import { AuthContextProvider } from './components/Context/AuthContext';
 import { PublicContextProvider } from './components/Context/PublicContext';
+import { AdminContextProvider } from './components/Context/AdminContext';
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <BrowserRouter>
       <AuthContextProvider>
-        <PublicContextProvider >
-          <App />
-        </PublicContextProvider>
+        <AdminContextProvider>
+          <PublicContextProvider >
+            <App />
+          </PublicContextProvider>
+        </AdminContextProvider>
       </AuthContextProvider>
     </BrowserRouter>
   </React.StrictMode>,

@@ -17,7 +17,8 @@ import { PublicContext } from '../Context/PublicContext';
 function Header() {
 
     const { user, isLoading, userCredentials, isLogout, setIsLogout, handleLogout, setAutoImage, isProfile, setIsProfile, errorResponse, setErrorResponse,
-        changePasswordInfo, setChangePasswordInfo, handleChangePassword, isChangePassword, setIsChangePassword
+        changePasswordInfo, setChangePasswordInfo, handleChangePassword, isChangePassword, setIsChangePassword,
+        isEditProfile, setIsEditProfile, handleChangeProfile, changeProfileInfo, setChangeProfileInfo
     } = useContext(AuthContext);
 
     const {publicLoading, settingsData} = useContext(PublicContext);
@@ -281,9 +282,33 @@ function Header() {
                             </div><br />
                         </div>
                         <hr />
-                        <div className="form-control" style={{ textAlign: 'center' }}>
-                            <span>Other profile view</span>
+                        <div className="form-control" style={{ textAlign: 'center', cursor: 'pointer' }} onClick={() => setIsEditProfile(true)}>
+                            <span>Edit Profile</span>
                         </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Change Password */}
+            {isEditProfile && (
+                <div className="popup">
+                    <div className="popup-body student-body" onClick={(e) => e.stopPropagation()} style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)', borderRadius: '5px', animation: isEditProfile ? 'animateCenter 0.3s linear' : 'closeAnimateCenter 0.3s linear' }}>
+
+                        <div className="popup-edit">
+                            <span>Edit Profile</span>
+                        </div>
+                        <hr />
+                        <form onSubmit={handleChangeProfile}>
+                            <div className='form-div'>
+                                <label htmlFor="">Full Name</label>
+                                <input type="text" className='form-control' value={changeProfileInfo} onChange={(e) => setChangeProfileInfo(e.target.value)} placeholder='Full Name' required />
+                            </div>
+
+                            <div style={{ justifyContent: 'space-between', marginTop: '25px', display: 'flex' }}>
+                                <button className='btn btn-danger' type='button' style={{ width: '80px' }} onClick={() => setIsEditProfile(false)}>Cancel</button>
+                                <button className='btn btn-primary' type='submit' style={{ width: '80px' }}>Save</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             )}

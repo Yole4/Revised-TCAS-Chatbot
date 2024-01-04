@@ -16,6 +16,7 @@ import Courses from "./components/pages/body/admin/Courses";
 import SchoolYear from "./components/pages/body/admin/SchoolYear";
 import Users from "./components/pages/body/admin/Users";
 import Settings from "./components/pages/body/admin/Settings";
+import ViewProject from "./components/pages/body/ViewProject";
 
 // undefine 404
 import Undefine from "./components/pages/404/Undefine";
@@ -39,6 +40,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={ user? <Home /> : <Login />} />
         <Route path="/projects" element={<Projects />} />
+        <Route path="/view-project/:id" element={<ViewProject />} />
         <Route path="/new-project" element={user ? user.user && user.user.userType === "Admin" ? <SubmitProject /> : <Home /> : <Login />} />
         <Route path="/about" element={<About />} />
         <Route path="/dashboard" element={user ? user.user && user.user.userType === "Admin" ? <Dashboard /> : <Home /> : <Login />} />

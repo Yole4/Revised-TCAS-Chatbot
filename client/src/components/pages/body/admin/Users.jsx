@@ -1,16 +1,34 @@
-import React, { useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Header from './Header'
 import Sidebar from './Sidebar'
 
 // react icons
 import { ImSearch } from "react-icons/im";
+import { AuthContext } from '../../../Context/AuthContext';
+import { AdminContext } from '../../../Context/AdminContext';
+import { backendUrl } from '../../../../utils/Services';
 
 function Users() {
     document.title = "Users";
 
+    const { isLoading, errorResponse, setErrorResponse } = useContext(AuthContext);
+    const { usersList } = useContext(AdminContext);
+
     const [isEditUser, setIsEditUser] = useState(false);
     const [isDelete, setIsDelete] = useState(false);
     const [onSearch, setOnSearch] = useState(false);
+
+    // reset response after 5 seconds
+    const [responseCountDown, setResponseCountDown] = useState(false);
+    useEffect(() => {
+        if (errorResponse) {
+            setResponseCountDown(true);
+            setTimeout(() => {
+                setResponseCountDown(false);
+                setErrorResponse(null);
+            }, 5000);
+        }
+    }, [errorResponse]);
 
     return (
         <>
@@ -44,8 +62,7 @@ function Users() {
                                                     <col width="5%" />
                                                     <col width="15%" />
                                                     <col width="20%" />
-                                                    <col width="20%" />
-                                                    <col width="10%" />
+                                                    <col width="30%" />
                                                     <col width="10%" />
                                                 </colgroup>
                                                 <thead>
@@ -53,38 +70,36 @@ function Users() {
                                                         <th>#</th>
                                                         <th>Avatar</th>
                                                         <th>Name</th>
-                                                        <th>Username</th>
-                                                        <th>User Type</th>
+                                                        <th>Email</th>
                                                         <th>Action</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {/* {usersAccountToSearch.length === 0 ? (
+                                                    {usersList.length === 0 ? (
                                                         <div style={{ position: 'absolute', width: '90%', color: 'red', margin: '15px 0px 0px 10px', fontSize: '14px' }}>
                                                             <span>No Student Account found!</span>
                                                         </div>
                                                     ) : (
-                                                        usersAccountToSearch.map((item, index) => (
+                                                        usersList.map((item, index) => (
                                                             <tr>
                                                                 <td className="text-center">{index + 1}</td>
                                                                 <td className="text-center"><img src={`${backendUrl}/${item.image}`} style={{ height: '40px', width: '40px', borderRadius: '50%' }} className="img-avatar img-thumbnail p-0 border-2" alt="user_avatar" /></td>
-                                                                <td>{`${item.first_name} ${item.middle_name} ${item.last_name}`}</td>
-                                                                <td><p className="m-0 truncate-1">{item.username}</p></td>
-                                                                <td><p className="m-0">{item.user_type}</p></td>
+                                                                <td>{item.fullname}</td>
+                                                                <td><p className="m-0 truncate-1">{item.email}</p></td>
                                                                 <td align="center">
                                                                     <button type="button" className="btn btn-flat btn-default btn-sm dropdown-toggle dropdown-icon" data-toggle="dropdown">
                                                                         Action
                                                                         <span className="sr-only">Toggle Dropdown</span>
                                                                     </button>
                                                                     <div className="dropdown-menu" role="menu">
-                                                                        <a className="dropdown-item" href="#" onClick={() => handleEdit(item)}><span className="fa fa-edit text-primary" /> Edit</a>
+                                                                        <a className="dropdown-item" href="#" ><span className="fa fa-edit text-primary" /> Edit</a>
                                                                         <div className="dropdown-divider" />
-                                                                        <a className="dropdown-item delete_data" href="#" onClick={() => handleDelete(item)}><span className="fa fa-trash text-danger" /> Delete</a>
+                                                                        <a className="dropdown-item delete_data" href="#" ><span className="fa fa-trash text-danger" /> Delete</a>
                                                                     </div>
                                                                 </td>
                                                             </tr>
                                                         ))
-                                                    )} */}
+                                                    )}
                                                 </tbody>
                                             </table>
                                         </div>
@@ -155,6 +170,23 @@ function Users() {
                             <button className='btn btn-danger' type='button' style={{ width: '80px' }} onClick={() => setIsDelete(false)}>Cancel</button>
                             <button className='btn btn-primary' type='submit' style={{ width: '80px' }} >Delete</button>
                         </div>
+                    </div>
+                </div>
+            )}
+
+            {isLoading && (
+                <div className="popup">
+                    <button class="btn btn-primary" type="button" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} disabled>
+                        <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true" style={{ marginRight: '10px' }}></span>
+                        Loading...
+                    </button>
+                </div>
+            )}
+
+            {responseCountDown && errorResponse && (
+                <div className='error-respond' style={{ backgroundColor: errorResponse && !errorResponse.isError ? '#7b4ae4' : '#fb7d60' }}>
+                    <div>
+                        <h5>{errorResponse && errorResponse.message}</h5>
                     </div>
                 </div>
             )}

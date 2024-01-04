@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 
 import Header from './Header';
 import Sidebar from './Sidebar';
@@ -12,8 +12,12 @@ import { FaUsers } from "react-icons/fa";
 import { FiArchive } from "react-icons/fi";
 import { TbArchiveOff } from "react-icons/tb";
 
+import { AdminContext } from '../../../Context/AdminContext';
+
 function Dashboard() {
   document.title = "Dashboard";
+
+  const {departmentToSearch, courseList, schoolYearList, usersList} = useContext(AdminContext);
 
   const navigate = useNavigate();
 
@@ -44,40 +48,37 @@ function Dashboard() {
               <div className="col-lg-3 col-6">
                 <div className="small-box bg-info">
                   <div className="inner">
-                    <h3>3</h3>
-                    {/* <h3>{departmentList && departmentList.filter(item => item.status === 'Active').length}</h3> */}
+                    <h3>{departmentToSearch && departmentToSearch.filter(item => item.status === 'Active').length}</h3>
                     <p>Active Department</p>
                   </div>
                   <div className="icon">
                     <i><FaThList /></i>
                   </div>
-                  <a href="#" className="small-box-footer" onClick={() => navigate('/department-list')}>More info <i className="fas fa-arrow-circle-right" /></a>
+                  <a href="#" className="small-box-footer" onClick={() => navigate('/department')}>More info <i className="fas fa-arrow-circle-right" /></a>
                 </div>
               </div>
               <div className="col-lg-3 col-6">
                 <div className="small-box bg-success">
                   <div className="inner">
-                    <h3>5<sup style={{ fontSize: 20 }}></sup></h3>
-                    {/* <h3>{coursesList && coursesList.filter(item => item.status === 'Active').length}<sup style={{ fontSize: 20 }}></sup></h3> */}
+                    <h3>{courseList && courseList.filter(item => item.status === 'Active').length}<sup style={{ fontSize: 20 }}></sup></h3>
                     <p>Active Courses</p>
                   </div>
                   <div className="icon">
                     <i><RiNewspaperLine /></i>
                   </div>
-                  <a href="#" className="small-box-footer" onClick={() => navigate('/curriculumn-list')}>More info <i className="fas fa-arrow-circle-right" /></a>
+                  <a href="#" className="small-box-footer" onClick={() => navigate('/courses')}>More info <i className="fas fa-arrow-circle-right" /></a>
                 </div>
               </div>
               <div className="col-lg-3 col-6">
                 <div className="small-box bg-info">
                   <div className="inner">
-                    <h3>5</h3>
-                    {/* <h3>{schoolYearList && schoolYearList.filter(item => item.status === 'Active').length}</h3> */}
+                    <h3>{schoolYearList && schoolYearList.filter(item => item.status === 'Active').length}</h3>
                     <p>Active School Year</p>
                   </div>
                   <div className="icon">
                     <i><MdDateRange /></i>
                   </div>
-                  <a href="#" className="small-box-footer" onClick={() => navigate('/department-list')}>More info <i className="fas fa-arrow-circle-right" /></a>
+                  <a href="#" className="small-box-footer" onClick={() => navigate('/school-year')}>More info <i className="fas fa-arrow-circle-right" /></a>
                 </div>
               </div>
               <div className="col-lg-3 col-6">
@@ -123,14 +124,13 @@ function Dashboard() {
               <div className="col-lg-3 col-6">
                 <div className="small-box bg-success">
                   <div className="inner">
-                    <h3>20</h3>
-                    {/* <h3>{usersAccount && usersAccount.length}</h3> */}
+                    <h3>{usersList && usersList.length}</h3>
                     <p>Users</p>
                   </div>
                   <div className="icon">
                     <i><FaUsers /></i>
                   </div>
-                  <a href="#" className="small-box-footer" onClick={() => navigate('/users-list')}>More info <i className="fas fa-arrow-circle-right" /></a>
+                  <a href="#" className="small-box-footer" onClick={() => navigate('/users')}>More info <i className="fas fa-arrow-circle-right" /></a>
                 </div>
               </div>
             </div>

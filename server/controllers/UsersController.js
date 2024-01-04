@@ -380,8 +380,8 @@ const changePassword = async (req, res) => {
                                                 const insertNewPassword = `UPDATE users SET password = ? WHERE id = ?`;
                                                 db.query(insertNewPassword, [hashedNewPassword, sanitizeUserId], (error, results) => {
                                                     if (error) {
-                                                        res.status(401).json({message: "Server side error!"});
-                                                    }else{
+                                                        res.status(401).json({ message: "Server side error!" });
+                                                    } else {
                                                         res.status(200).json({ message: "User credentials updated successfully!" });
                                                     }
                                                 })
@@ -424,4 +424,29 @@ const changePassword = async (req, res) => {
     }
 }
 
-module.exports = { protected, registerUser, loginUser, loginGoogle, registerGoogle, autoImageUpload, getUserCredentials, changePassword };
+// update profile name
+const updateProfileName = async (req, res) => {
+    const { changeProfileInfo, userId } = req.body;
+
+    const validationRules = [
+        { validator: validator.isLength, options: { min: 1, max: 255 } },
+    ];
+
+    const sanitizeUserId = sanitizeAndValidate(userId, validationRules);
+    const sanitizeFullname = sanitizeAndValidate(changeProfileInfo, validationRules);
+
+    if (!sanitizeUserId || !sanitizeFullname) {
+        res.status(401).json({ message: "Server side error!" });
+    } else {
+        const updateName = `UPDATE users SET fullname = ? WHERE id = ?`;
+        db.query(updateName, [sanitizeFullname, sanitizeUserId], (error, results) => {
+            if (error) {
+                res.status(401).json({message: "Server side error!"});
+            }else{
+                res.status(200).json({message: "Update Success!"});
+            }
+        })
+    }
+}
+
+module.exports = { protected, registerUser, loginUser, loginGoogle, registerGoogle, autoImageUpload, getUserCredentials, changePassword, updateProfileName };
