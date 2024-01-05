@@ -339,6 +339,33 @@ export const AuthContextProvider = ({ children }) => {
         }
     }, [mount, userId]);
 
+    // ####################################################################      GET NOTIFICATIONS      ######################################################################################
+    const [notificationList, setNotificationList] = useState([]);
+
+    useEffect(() => {
+        if (userId) {
+            const fetchNot = async (e) => {
+                setIsLoading(true);
+
+                try {
+                    const response = await apostRequest(`${backendUrl}/api/users/get-notifications`, {userId: userId.toString()});
+
+                    setIsLoading(false);
+
+                    if (response.error){
+                        console.log(response.message);
+                    }else{
+                        setNotificationList(response.message);
+                    }
+                } catch (error) {
+                    setIsLoading(false);
+                    console.log("Error: ",error);
+                }
+            };
+            fetchNot();
+        }
+    }, [userId]);
+
 
     return <AuthContext.Provider value={{
         user,
@@ -380,6 +407,7 @@ export const AuthContextProvider = ({ children }) => {
         handleChangeProfile,
         changeProfileInfo,
         setChangeProfileInfo,
-        userId
+        userId,
+        notificationList
     }}> {children} </AuthContext.Provider>
 }

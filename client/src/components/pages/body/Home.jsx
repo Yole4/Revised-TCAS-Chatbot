@@ -1,8 +1,9 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Header from '../Header';
 import { useNavigate } from 'react-router-dom';
 import jose from '../../assets/images/jose.jpg';
 import { PublicContext } from '../../Context/PublicContext';
+import { backendUrl } from '../../../utils/Services';
 
 function Home() {
     const navigate = useNavigate();
@@ -11,13 +12,23 @@ function Home() {
 
     document.title = settingsData && settingsData.system_name;
 
+    const [coverUrl, setCoverUrl] = useState('');
+    useEffect(() => {
+        if (settingsData) {
+            const url = `${backendUrl}/${settingsData.system_cover}`;
+
+            // Replace spaces with '%20'
+            const re = url.replace(/ /g, '%20');
+            setCoverUrl(re);
+        }
+    }, [settingsData]);
+
     return (
         <>
             <Header />
 
             <div className="content-wrapper pt-5" style={{ color: 'black', marginLeft: '0' }}>
-                <div id="header" style={{ backgroundImage: `url(${jose})`, backgroundRepeat: 'no-repeat', backgroundSize: 'cover', backgroundPosition: 'center center'}} className="shadow mb-4">
-                {/* <div id="header" style={{ backgroundImage: systemCover && coverUrl ? `url(${coverUrl})` : 'none', backgroundRepeat: 'no-repeat', backgroundSize: 'cover', backgroundPosition: 'center center' }} className="shadow mb-4"> */}
+                <div id="header" style={{ backgroundImage: settingsData && coverUrl ? `url(${coverUrl})` : 'none', backgroundRepeat: 'no-repeat', backgroundSize: 'cover', backgroundPosition: 'center center' }} className="shadow mb-4">
 
                     <div className="d-flex justify-content-center h-100 w-100 align-items-center flex-column px-3">
                         <h1 className="w-100 text-center site-title" style={{ marginBottom: '20px' }}>{settingsData && settingsData.system_name}</h1>

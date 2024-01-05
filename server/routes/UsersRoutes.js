@@ -4,7 +4,7 @@ const multer = require('multer');
 
 const router = express.Router();
 
-const {protected, loginUser, registerUser, loginGoogle, registerGoogle, autoImageUpload, getUserCredentials, changePassword, updateProfileName} = require('../controllers/UsersController');
+const {protected, loginUser, registerUser, loginGoogle, registerGoogle, autoImageUpload, getUserCredentials, changePassword, updateProfileName, getNotification} = require('../controllers/UsersController');
 
 // auto image upload
 const imageUpload = multer({
@@ -20,6 +20,7 @@ router.post('/image-upload', imageUpload.single('image'), verifyToken, autoImage
 router.post('/get-user-credentials', verifyToken, getUserCredentials);
 router.post('/change-password', verifyToken, changePassword);
 router.post('/update-profile', verifyToken, updateProfileName);
+router.post('/get-notifications', verifyToken, getNotification);
 
 module.exports = router;
 

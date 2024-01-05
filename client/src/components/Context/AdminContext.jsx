@@ -5,9 +5,9 @@ import { agetRequest, apostRequest, backendUrl } from "../../utils/Services";
 
 export const AdminContext = createContext();
 
-export const AdminContextProvider = ({children}) => {
+export const AdminContextProvider = ({ children }) => {
 
-    const {userId, userCredentials, errorResponse, setErrorResponse, isLoading, setIsLoading, mount, setMount} = useContext(AuthContext);
+    const { userId, userCredentials, errorResponse, setErrorResponse, isLoading, setIsLoading, mount, setMount } = useContext(AuthContext);
 
     // #####################################################################    FETCH DEPARTMENT  ####################################################################
     const [departmentMount, setDepartmentMount] = useState(false);
@@ -26,12 +26,12 @@ export const AdminContextProvider = ({children}) => {
 
                     if (response.error) {
                         console.log(response.message);
-                    }else{
+                    } else {
                         setDepartmentList(response.message);
                     }
                 } catch (error) {
                     setIsLoading(false);
-                    console.log("Error: ",error);
+                    console.log("Error: ", error);
                 }
             };
             fetchDepartment();
@@ -58,14 +58,14 @@ export const AdminContextProvider = ({children}) => {
         setErrorResponse(null);
 
         try {
-            const response = await apostRequest(`${backendUrl}/api/admin/add-department`, {addDepartmentData, userId: userId.toString()});
+            const response = await apostRequest(`${backendUrl}/api/admin/add-department`, { addDepartmentData, userId: userId.toString() });
 
             setIsLoading(false);
 
             if (response.error) {
-                setErrorResponse({message: response.message, isError: true});
-            }else{
-                setErrorResponse({message: response.message, isError: false});
+                setErrorResponse({ message: response.message, isError: true });
+            } else {
+                setErrorResponse({ message: response.message, isError: false });
                 setIsAddDepartment(false);
                 setDepartmentMount(departmentMount ? false : true);
             }
@@ -91,20 +91,20 @@ export const AdminContextProvider = ({children}) => {
         setErrorResponse(null);
 
         try {
-            const response = await apostRequest(`${backendUrl}/api/admin/edit-department`, {editDepartmentData, userId: userId.toString()});
+            const response = await apostRequest(`${backendUrl}/api/admin/edit-department`, { editDepartmentData, userId: userId.toString() });
 
             setIsLoading(false);
 
             if (response.error) {
-                setErrorResponse({message: response.message, isError: true});
-            }else{
-                setErrorResponse({message: response.message, isError: false});
+                setErrorResponse({ message: response.message, isError: true });
+            } else {
+                setErrorResponse({ message: response.message, isError: false });
                 setIsEditDepartment(false);
                 setDepartmentMount(departmentMount ? false : true);
             }
         } catch (error) {
             setIsLoading(false);
-            console.log("Error: ",error);
+            console.log("Error: ", error);
         }
     }
 
@@ -122,20 +122,20 @@ export const AdminContextProvider = ({children}) => {
         setErrorResponse(null);
 
         try {
-            const response = await apostRequest(`${backendUrl}/api/admin/delete-department`, {deleteData, userId: userId.toString()});
+            const response = await apostRequest(`${backendUrl}/api/admin/delete-department`, { deleteData, userId: userId.toString() });
 
             setIsLoading(false);
 
             if (response.error) {
-                setErrorResponse({message: response.message, isError: true});
-            }else{
-                setErrorResponse({message: response.message, isError: false});
+                setErrorResponse({ message: response.message, isError: true });
+            } else {
+                setErrorResponse({ message: response.message, isError: false });
                 setIsDeleteDepartment(false);
                 setDepartmentMount(departmentMount ? false : true);
             }
-        } catch (error) {   
+        } catch (error) {
             setIsLoading(false);
-            console.log("Error: ",error);
+            console.log("Error: ", error);
         }
     }
 
@@ -155,12 +155,12 @@ export const AdminContextProvider = ({children}) => {
 
                     if (response.error) {
                         console.log(response.message);
-                    }else{
+                    } else {
                         setCourseList(response.message);
                     }
-                } catch (error) {   
+                } catch (error) {
                     setIsLoading(false);
-                    console.log("Error: ",error);
+                    console.log("Error: ", error);
                 }
             };
             fetchCourse();
@@ -180,16 +180,16 @@ export const AdminContextProvider = ({children}) => {
 
         setIsLoading(true);
         setErrorResponse(null);
-        
+
         try {
-            const response = await apostRequest(`${backendUrl}/api/admin/add-course`, {courseData, userId: userId.toString()});
+            const response = await apostRequest(`${backendUrl}/api/admin/add-course`, { courseData, userId: userId.toString() });
 
             setIsLoading(false);
 
-            if (response.error){
-                setErrorResponse({message: response.message, isError: true});
-            }else{
-                setErrorResponse({message: response.message, isError: false});
+            if (response.error) {
+                setErrorResponse({ message: response.message, isError: true });
+            } else {
+                setErrorResponse({ message: response.message, isError: false });
                 setIsAddCourse(false);
                 setCourseMount(courseMount ? false : true);
             }
@@ -215,19 +215,19 @@ export const AdminContextProvider = ({children}) => {
         setErrorResponse(null);
 
         try {
-            const response = await apostRequest(`${backendUrl}/api/admin/edit-course`, {editCourseData, userId: userId.toString()});
+            const response = await apostRequest(`${backendUrl}/api/admin/edit-course`, { editCourseData, userId: userId.toString() });
 
             setIsLoading(false);
 
-            if (response.error){
-                setErrorResponse({message: response.message, isError: true});
-            }else{
-                setErrorResponse({message: response.message, isError: false});
+            if (response.error) {
+                setErrorResponse({ message: response.message, isError: true });
+            } else {
+                setErrorResponse({ message: response.message, isError: false });
                 setIsEditCourse(false);
                 setCourseMount(courseMount ? false : true);
             }
-        } catch (error) {   
-            console.log("Error: ",error);
+        } catch (error) {
+            console.log("Error: ", error);
             setIsLoading(false);
         }
     }
@@ -246,14 +246,14 @@ export const AdminContextProvider = ({children}) => {
         setErrorResponse(null);
 
         try {
-            const response = await apostRequest(`${backendUrl}/api/admin/delete-course`, {deleteCourseData, userId: userId.toString()});
+            const response = await apostRequest(`${backendUrl}/api/admin/delete-course`, { deleteCourseData, userId: userId.toString() });
 
             setIsLoading(false);
 
             if (response.error) {
-                setErrorResponse({message: response.message, isError: true});
-            }else{
-                setErrorResponse({message: response.message, isError: false});
+                setErrorResponse({ message: response.message, isError: true });
+            } else {
+                setErrorResponse({ message: response.message, isError: false });
                 setIsDeleteCourse(false);
                 setCourseMount(courseMount ? false : true);
             }
@@ -265,26 +265,26 @@ export const AdminContextProvider = ({children}) => {
 
     // #####################################################################    FETCH SCHOOL YEAR  ####################################################################
     const [schoolYearList, setSchoolYearList] = useState([]);
-    const [syMount ,setSYMount] = useState(false);
+    const [syMount, setSYMount] = useState(false);
 
     useEffect(() => {
         if (userId) {
             const fetchSY = async (e) => {
-                
+
                 setIsLoading(false);
 
                 try {
                     const response = await agetRequest(`${backendUrl}/api/admin/fetch-sy`);
-                    
+
                     setIsLoading(false);
 
                     if (response.error) {
                         console.log(response.message);
-                    }else{
+                    } else {
                         setSchoolYearList(response.message);
                     }
                 } catch (error) {
-                    console.log("Error: ",error);
+                    console.log("Error: ", error);
                     setIsLoading(false);
                 }
             };
@@ -306,19 +306,19 @@ export const AdminContextProvider = ({children}) => {
         setErrorResponse(null);
 
         try {
-            const response = await apostRequest(`${backendUrl}/api/admin/add-sy`, {addSYData, userId: userId.toString()});
+            const response = await apostRequest(`${backendUrl}/api/admin/add-sy`, { addSYData, userId: userId.toString() });
 
             setIsLoading(false);
 
             if (response.error) {
-                setErrorResponse({message: response.message, isError: true});
-            }else{
-                setErrorResponse({message: response.message, isError: false});
+                setErrorResponse({ message: response.message, isError: true });
+            } else {
+                setErrorResponse({ message: response.message, isError: false });
                 setIsAddSY(false);
                 setSYMount(syMount ? false : true);
             }
         } catch (error) {
-            console.log("Error: ",error);
+            console.log("Error: ", error);
             setIsLoading(false);
         }
     }
@@ -338,19 +338,19 @@ export const AdminContextProvider = ({children}) => {
         setErrorResponse(null);
 
         try {
-            const response = await apostRequest(`${backendUrl}/api/admin/edit-sy`, {editSYData, userId: userId.toString()});
+            const response = await apostRequest(`${backendUrl}/api/admin/edit-sy`, { editSYData, userId: userId.toString() });
 
             setIsLoading(false);
 
             if (response.error) {
-                setErrorResponse({message: response.message, isError: true});
-            }else{
-                setErrorResponse({message: response.message, isError: false});
+                setErrorResponse({ message: response.message, isError: true });
+            } else {
+                setErrorResponse({ message: response.message, isError: false });
                 setIsEditSY(false);
                 setSYMount(syMount ? false : true);
             }
         } catch (error) {
-            console.log("Error: ",error);
+            console.log("Error: ", error);
             setIsLoading(false);
         }
     }
@@ -369,19 +369,19 @@ export const AdminContextProvider = ({children}) => {
         setErrorResponse(null);
 
         try {
-            const response = await apostRequest(`${backendUrl}/api/admin/delete-sy`, {deleteSYData, userId: userId.toString()});
+            const response = await apostRequest(`${backendUrl}/api/admin/delete-sy`, { deleteSYData, userId: userId.toString() });
 
             setIsLoading(false);
 
-            if (response.error){
-                setErrorResponse({message: response.message, isError: true});
-            }else{
-                setErrorResponse({message: response.message, isError: false});
+            if (response.error) {
+                setErrorResponse({ message: response.message, isError: true });
+            } else {
+                setErrorResponse({ message: response.message, isError: false });
                 setIsDeleteSY(false);
                 setSYMount(syMount ? false : true);
             }
         } catch (error) {
-            console.log("Error: ",error);
+            console.log("Error: ", error);
             setIsLoading(false);
         }
     }
@@ -400,19 +400,153 @@ export const AdminContextProvider = ({children}) => {
 
                     setIsLoading(false);
 
-                    if (response.error){    
+                    if (response.error) {
                         console.log(response.message);
-                    }else{
+                    } else {
                         setUsersList(response.message);
                     }
                 } catch (error) {
-                    console.log("Error: ",error);
+                    console.log("Error: ", error);
                     setIsLoading(false);
                 }
             };
             getUsers();
         }
     }, [userId, usersMount]);
+
+    // #####################################################################    DELETE USER  ####################################################################
+    const [deleteUserData, setDeleteUserData] = useState({
+        deleteId: '',
+        email: '',
+
+    });
+    const [isDeleteUser, setIsDeleteUser] = useState(false);
+
+    const handleDeleteUser = async (e) => {
+        e.preventDefault();
+
+        setIsLoading(true);
+        setErrorResponse(null);
+
+        try {
+            const response = await apostRequest(`${backendUrl}/api/admin/delete-user`, { deleteUserData, userId: userId.toString() });
+
+            setIsLoading(false);
+
+            if (response.error) {
+                setErrorResponse({ message: response.message, isError: true });
+            } else {
+                setErrorResponse({ message: response.message, isError: false });
+                setIsDeleteUser(false);
+                setUsersMount(usersMount ? false : true);
+            }
+        } catch (error) {
+            setIsLoading(false);
+            console.log("Error: ", error);
+        }
+    }
+
+    // #####################################################################    UPDATE SETTINGS  ####################################################################
+    const [updateSettingsData, setUpdateSettingsData] = useState({
+        editId: '',
+        systemName: '',
+        shortName: '',
+        welcomeContent: '',
+        about: '',
+        systemEmail: '',
+        systemNumber: '',
+        systemLocation: ''
+    });
+    const [settingsMount, setSettingsMount] = useState(false);
+
+    const handleUpdateSettings = async (e) => {
+        e.preventDefault();
+
+        setIsLoading(true);
+        setErrorResponse(null);
+
+        try {
+            const response = await apostRequest(`${backendUrl}/api/admin/update-settings`, {updateSettingsData, userId: userId.toString()});
+
+            setIsLoading(false);
+
+            if (response.error) {
+                setErrorResponse({message: response.message, isError: true});
+            }else{
+                setErrorResponse({message: response.message, isError: false});
+                setSettingsMount(settingsMount ? false : true);
+            }
+        } catch (error) {
+            setIsLoading(false);
+            console.log("Error: ",error);
+        }
+    }
+
+    // #####################################################################    AUTO LOGO UPDATE  ####################################################################
+    const [logo, setLogo] = useState([]);
+
+    useEffect(() => {
+        if (logo) {
+            const autoImage = async (e) => {
+                setIsLoading(true);
+                setErrorResponse(null);
+
+                const logoForm = new FormData();
+                logoForm.append('logo', logo);
+                logoForm.append('editId', updateSettingsData.editId.toString());
+
+                try {
+                    const response = await apostRequest(`${backendUrl}/api/admin/update-system-logo`, logoForm);
+
+                    setIsLoading(false);
+
+                    if (response.error) {
+                        setErrorResponse({message: response.message, isError: true});
+                    }else{
+                        setErrorResponse({message: response.message, isError: false});
+                        setSettingsMount(settingsMount ? false : true);
+                    }
+                } catch (error) {
+                    setIsLoading(false);
+                    console.log("Error: ", error);
+                }
+            };
+            autoImage();
+        }
+    }, [logo]);
+
+    // #####################################################################    AUTO COVER UPDATE  ####################################################################
+    const [cover, setCover] = useState([]);
+
+    useEffect(() => {
+        if (cover) {
+            const autoImage = async (e) => {
+                setIsLoading(true);
+                setErrorResponse(null);
+
+                const logoForm = new FormData();
+                logoForm.append('cover', cover);
+                logoForm.append('editId', updateSettingsData.editId.toString());
+
+                try {
+                    const response = await apostRequest(`${backendUrl}/api/admin/update-system-cover`, logoForm);
+
+                    setIsLoading(false);
+
+                    if (response.error) {
+                        setErrorResponse({message: response.message, isError: true});
+                    }else{
+                        setErrorResponse({message: response.message, isError: false});
+                        setSettingsMount(settingsMount ? false : true);
+                    }
+                } catch (error) {
+                    setIsLoading(false);
+                    console.log("Error: ", error);
+                }
+            };
+            autoImage();
+        }
+    }, [cover]);
 
     return <AdminContext.Provider value={{
         addDepartmentData,
@@ -437,6 +571,10 @@ export const AdminContextProvider = ({children}) => {
         addSYData, setAddSYData, isAddSY, setIsAddSY, handleAddSY,
         editSYData, setEditSYData, isEditSY, setIsEditSY, handleEditSY,
         deleteSYData, setDeleteSYData, isDeleteSY, setIsDeleteSY, handleDeleteSY,
-        usersList
+        usersList,
+        deleteUserData, setDeleteUserData, isDeleteUser, setIsDeleteUser, handleDeleteUser,
+        updateSettingsData, handleUpdateSettings, setUpdateSettingsData,
+        settingsMount, setSettingsMount,
+        setLogo, setCover
     }}>{children}</AdminContext.Provider>
 }

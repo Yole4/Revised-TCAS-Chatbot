@@ -15,10 +15,12 @@ import { useContext } from 'react';
 import { AuthContext } from '../../../Context/AuthContext';
 
 import { backendUrl } from '../../../../utils/Services';
+import { PublicContext } from '../../../Context/PublicContext';
 
 function Sidebar() {
 
     const {user, userCredentials} = useContext(AuthContext);
+    const {settingsData} = useContext(PublicContext);
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -29,7 +31,7 @@ function Sidebar() {
                 <i className='fas fa-times close-button' data-widget="pushmenu" style={{ position: 'absolute', top: '17px', right: '20px', fontSize: '27px' }} href="#" role="button"></i>
                 {/* Brand Logo */}
                 <span className="brand-link span-cursor" style={{ width: '190px' }}>
-                    <img src={logo} alt="AdminLTE Logo" className="brand-image img-circle elevation-3" style={{ opacity: '.8' }} />
+                    <img src={settingsData ? `${backendUrl}/${settingsData.system_logo}` : logo} alt="AdminLTE Logo" className="brand-image img-circle elevation-3" style={{ opacity: '.8' }} />
                     <span className="brand-text font-weight-light">{userCredentials && userCredentials.user_type}</span>
                 </span>
                 {/* Sidebar */}

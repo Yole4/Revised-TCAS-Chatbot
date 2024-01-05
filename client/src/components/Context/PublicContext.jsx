@@ -1,19 +1,22 @@
 import { createContext, useContext, useEffect, useState } from 'react';
+import { AdminContext } from './AdminContext';
 
-const {backendUrl, getRequest} = require('../../utils/Services');
+const { backendUrl, getRequest } = require('../../utils/Services');
 
 export const PublicContext = createContext();
 
-export const PublicContextProvider = ({children}) => {
+export const PublicContextProvider = ({ children }) => {
     const [publicLoading, setPublicLoading] = useState(false);
     const [publicMount, setPublicMount] = useState(false);
+
+    const { setUpdateSettingsData, settingsMount } = useContext(AdminContext);
 
     // ##########################################################   FETCH SETTINGS  ##################################################################
     const [settingsData, setSettingsData] = useState(null);
 
     useEffect(() => {
         const fetchSettings = async (e) => {
-            
+
             setPublicLoading(true);
 
             try {
@@ -23,8 +26,18 @@ export const PublicContextProvider = ({children}) => {
 
                 if (response.error) {
                     console.log(response.message);
-                }else{
+                } else {
                     setSettingsData(response.message);
+                    setUpdateSettingsData({
+                        editId: response.message.id,
+                        systemName: response.message.system_name,
+                        shortName: response.message.system_short_name,
+                        welcomeContent: response.message.welcome_content,
+                        about: response.message.about_us,
+                        systemEmail: response.message.email,
+                        systemNumber: response.message.contact_number,
+                        systemLocation: response.message.address
+                    });
                 }
             } catch (error) {
                 console.log("Error :", error);
@@ -32,7 +45,7 @@ export const PublicContextProvider = ({children}) => {
             }
         };
         fetchSettings();
-    }, []);
+    }, [settingsMount]);
 
     // ##########################################################   FETCH ARCHIVE FILES  ##################################################################
     const [archiveFiles, setArchiveFiles] = useState(null);
@@ -50,7 +63,7 @@ export const PublicContextProvider = ({children}) => {
 
                 if (response.error) {
                     console.log(response.message);
-                }else{
+                } else {
                     setArchiveFiles(response.message);
                 }
             } catch (error) {

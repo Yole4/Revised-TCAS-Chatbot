@@ -18,7 +18,7 @@ function Header() {
 
     const { user, isLoading, userCredentials, isLogout, setIsLogout, handleLogout, setAutoImage, isProfile, setIsProfile, errorResponse, setErrorResponse,
         changePasswordInfo, setChangePasswordInfo, handleChangePassword, isChangePassword, setIsChangePassword,
-        isEditProfile, setIsEditProfile, handleChangeProfile, changeProfileInfo, setChangeProfileInfo
+        isEditProfile, setIsEditProfile, handleChangeProfile, changeProfileInfo, setChangeProfileInfo, notificationList
     } = useContext(AuthContext);
 
     const {publicLoading, settingsData} = useContext(PublicContext);
@@ -67,15 +67,15 @@ function Header() {
                             <li className="nav-item dropdown">
                                 <a className="nav-link" data-toggle="dropdown" href="#">
                                     <i className="far fa-bell" />
-                                    <span className="badge badge-warning navbar-badge">3</span>
+                                    <span className="badge badge-warning navbar-badge">{notificationList && notificationList.length > 0 ? notificationList.length : ""}</span>
                                 </a>
                                 <div className="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                                    <span className="dropdown-item dropdown-header">3 Notification</span>
+                                    <span className="dropdown-item dropdown-header">{notificationList && notificationList.length} Notification</span>
 
 
                                     <div style={{ maxHeight: '400px', overflow: 'auto' }}>
-                                        {/* {myNotifications && myNotifications.reverse().map(item => (
-                                            <div key={item.id} className='dropdown-item other' onClick={() => item.notification_type === "Request Document" && navigate('/student-list')} style={{ fontSize: '12px', cursor: 'pointer', backgroundColor: item.seen === 0 ? 'rgba(131, 131, 131, 0.20)' : '' }}>
+                                        {notificationList && notificationList.reverse().map(item => (
+                                            <div key={item.id} className='dropdown-item other' onClick={() => item.notification_type === "Request Document" && navigate('/student')} style={{ fontSize: '12px', cursor: 'pointer', backgroundColor: item.seen === 0 ? 'rgba(131, 131, 131, 0.20)' : '' }}>
                                                 <div style={{ display: 'flex' }}>
                                                     <i className="fas fa-bell mr-2" style={{ color: 'rgba(80, 66, 66, 0.935)', fontSize: '15px', marginTop: '5px' }} /><p style={{ marginLeft: '10px' }}>{item.content}</p>
                                                 </div>
@@ -83,7 +83,7 @@ function Header() {
                                                     <p style={{ marginLeft: 22, fontSize: 10, color: 'rgb(105, 96, 96)' }}>{item.date}</p>
                                                 </div>
                                             </div>
-                                        ))} */}
+                                        ))}
                                     </div>
 
                                     <div className="dropdown-divider" />
@@ -130,7 +130,7 @@ function Header() {
             <nav className="main-header navbar navbar-expand navbar-light border-0 navbar-light text-sm" id="top-Nav" style={{ marginLeft: '0', marginTop: '0', zIndex: '50' }}>
                 <div className="container">
                     <div className="navbar-brand" style={{ cursor: 'pointer' }} onClick={() => navigate('/')}>
-                        <img src={logo} alt="Site Logo" className="brand-image img-circle elevation-3" style={{ opacity: '.8', height: '40px', marginRight: '10px' }} />
+                        <img src={settingsData ? `${backendUrl}/${settingsData.system_logo}` : logo} alt="Site Logo" className="brand-image img-circle elevation-3" style={{ opacity: '.8', height: '40px', marginRight: '10px' }} />
                         <span>{settingsData && settingsData.system_short_name}</span>
                     </div>
                     <button className="navbar-toggler order-1" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">

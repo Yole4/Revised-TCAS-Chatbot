@@ -441,12 +441,37 @@ const updateProfileName = async (req, res) => {
         const updateName = `UPDATE users SET fullname = ? WHERE id = ?`;
         db.query(updateName, [sanitizeFullname, sanitizeUserId], (error, results) => {
             if (error) {
-                res.status(401).json({message: "Server side error!"});
-            }else{
-                res.status(200).json({message: "Update Success!"});
+                res.status(401).json({ message: "Server side error!" });
+            } else {
+                res.status(200).json({ message: "Update Success!" });
             }
         })
     }
 }
 
-module.exports = { protected, registerUser, loginUser, loginGoogle, registerGoogle, autoImageUpload, getUserCredentials, changePassword, updateProfileName };
+// fetch notifications
+const getNotification = async (req, res) => {
+    const { userId } = req.body;
+
+    const validationRules = [
+        { validator: validator.isLength, options: { min: 1, max: 50 } },
+    ];
+
+    const sanitizeUserId = sanitizeAndValidate(userId, validationRules);
+
+    if (!sanitizeUserId) {
+        res.status(401).json({ message: "Invalid Input!" });
+    } else {
+        // get notifications
+        const getNotification = `SELECT * FROM notifications WHERE user_id = ? AND isDelete = ?`;
+        db.query(getNotification, [sanitizeUserId, "not"], (error, results) => {
+            if (error) {
+                res.status(401).json({ message: "Server side error!" });
+            } else {
+                res.status(200).json({ message: results });
+            }
+        });
+    }
+}
+
+module.exports = { protected, registerUser, loginUser, loginGoogle, registerGoogle, autoImageUpload, getUserCredentials, changePassword, updateProfileName, getNotification };

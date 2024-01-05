@@ -12,10 +12,8 @@ function Users() {
     document.title = "Users";
 
     const { isLoading, errorResponse, setErrorResponse } = useContext(AuthContext);
-    const { usersList } = useContext(AdminContext);
+    const { usersList, deleteUserData, setDeleteUserData, isDeleteUser, setIsDeleteUser, handleDeleteUser } = useContext(AdminContext);
 
-    const [isEditUser, setIsEditUser] = useState(false);
-    const [isDelete, setIsDelete] = useState(false);
     const [onSearch, setOnSearch] = useState(false);
 
     // reset response after 5 seconds
@@ -92,9 +90,7 @@ function Users() {
                                                                         <span className="sr-only">Toggle Dropdown</span>
                                                                     </button>
                                                                     <div className="dropdown-menu" role="menu">
-                                                                        <a className="dropdown-item" href="#" ><span className="fa fa-edit text-primary" /> Edit</a>
-                                                                        <div className="dropdown-divider" />
-                                                                        <a className="dropdown-item delete_data" href="#" ><span className="fa fa-trash text-danger" /> Delete</a>
+                                                                        <a className="dropdown-item delete_data" href="#" onClick={() => { setIsDeleteUser(true); setDeleteUserData({ deleteId: item.id, email: item.email }) }} ><span className="fa fa-trash text-danger" /> Delete</a>
                                                                     </div>
                                                                 </td>
                                                             </tr>
@@ -111,65 +107,25 @@ function Users() {
                 </section>
             </div>
 
-            {/* -----------------   EDIT User -------------------- */}
-            {isEditUser && (
-                <div className="popup">
-                    <div className='department-modal' style={{ animation: isEditUser ? 'animateCenter 0.3s linear' : '' }}>
-                        <h5>Edit User</h5>
-                        <hr />
-                        <div className="container-fluid">
-                            <form action id="department-form">
-                                <div className="form-group">
-                                    <label htmlFor="name" className="control-label">First Name</label>
-                                    <input type="text" className="form-control form-control-border" placeholder="First Name" required />
-                                </div>
-                                <div className="form-group">
-                                    <label htmlFor="name" className="control-label">Middle Name (Optional)</label>
-                                    <input type="text" className="form-control form-control-border" placeholder="Middle Name" required />
-                                </div>
-                                <div className="form-group">
-                                    <label htmlFor="name" className="control-label">Last Name</label>
-                                    <input type="text" className="form-control form-control-border" placeholder="Last Name" required />
-                                </div>
-                                <div className="form-group">
-                                    <label htmlFor="name" className="control-label">Username</label>
-                                    <input type="text" className="form-control form-control-border" placeholder="Username" required />
-                                </div>
-                                <div className="form-group" style={{ marginBottom: '30px' }}>
-                                    <label htmlFor className="control-label">User Type</label>
-                                    <select name="status" id="status" className="form-control form-control-border" required>
-                                        <option value="" selected disabled>Select User Type</option>
-                                        <option value="Admin">Admin</option>
-                                        <option value="Student">Student</option>
-                                    </select>
-                                </div>
-                                <div className="form-group" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <button className='btn btn-danger' style={{ width: '100px' }} type='button' onClick={() => setIsEditUser(false)}>Cancel</button>
-                                    <button className='btn btn-primary' style={{ width: '100px' }} type='submit'>Save</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            )}
-
             {/* -----------------------DELETE CONFIRMATION---------------------- */}
-            {isDelete && (
+            {isDeleteUser && (
                 <div className="popup">
-                    <div className="popup-body student-body" onClick={(e) => e.stopPropagation()} style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)', borderRadius: '5px', animation: isDelete ? 'animateCenter 0.3s linear' : 'closeAnimateCenter 0.3s linear' }}>
+                    <div className="popup-body student-body" onClick={(e) => e.stopPropagation()} style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)', borderRadius: '5px', animation: isDeleteUser ? 'animateCenter 0.3s linear' : 'closeAnimateCenter 0.3s linear' }}>
 
                         <div className="popup-edit">
                             <h5>Delete?</h5>
                         </div>
                         <hr />
-                        <div className='form-div'>
-                            <span>Are you sure you wan't to Delete (name of user)?</span>
-                        </div>
+                        <form onSubmit={handleDeleteUser}>
+                            <div className='form-div'>
+                                <span>Are you sure you wan't to Delete {deleteUserData.email}?</span>
+                            </div>
 
-                        <div style={{ justifyContent: 'space-between', marginTop: '25px', display: 'flex' }}>
-                            <button className='btn btn-danger' type='button' style={{ width: '80px' }} onClick={() => setIsDelete(false)}>Cancel</button>
-                            <button className='btn btn-primary' type='submit' style={{ width: '80px' }} >Delete</button>
-                        </div>
+                            <div style={{ justifyContent: 'space-between', marginTop: '25px', display: 'flex' }}>
+                                <button className='btn btn-danger' type='button' style={{ width: '80px' }} onClick={() => setIsDeleteUser(false)}>Cancel</button>
+                                <button className='btn btn-primary' type='submit' style={{ width: '80px' }} >Delete</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             )}
