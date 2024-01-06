@@ -3,54 +3,17 @@ import axios from 'axios';
 
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../../Context/AuthContext';
+import { ChatbotContext } from '../../../Context/ChatbotContext';
 
 function Chatbot() {
     const navigate = useNavigate();
 
-    const {userCredentials} = useContext(AuthContext);
+    const {isChatbot, setIsChatbot, messages, setMessages, userInput, setUserInput, disableChat, setDisableChat, handleChat} = useContext(ChatbotContext);
 
-    const [isChatbot, setIsChatbot] = useState(false);
-    const [messages, setMessages] = useState([]);
-    const [userInput, setUserInput] = useState('');
+    const {userCredentials} = useContext(AuthContext);
 
     // loading
     const [isLoading, setIsLoading] = useState(false);
-    const [disableChat, setDisableChat] = useState(false);
-
-    const handleChat = async (e) => {
-        e.preventDefault();
-
-        if (userInput && !disableChat) {
-            setDisableChat(true);
-            setMessages([...messages, { userMessage: userInput, botMessage: "..." }]);
-            setUserInput('');
-
-            try {
-                // const response = await axios.post(`${backendUrl}/api/chat-request`, { userInput }, {
-                //     headers: {
-                //         'Authorization': `Bearer ${token}`
-                //     }
-                // });
-
-                const response = await axios.post(`/api/chat-request`, { userInput }, {
-                    headers: {
-                        'Authorization': `Bearer`
-                    }
-                });
-
-                if (response.status === 200) {
-                    setTimeout(() => {
-                        setDisableChat(false);
-                        setMessages([...messages, { botMessage: response.data.message, userMessage: userInput }]);
-                    }, 1000);
-                }
-            } catch (error) {
-                setDisableChat(false);
-                console.log(error);
-                setMessages([...messages, { userMessage: userInput, botMessage: "Something went wrong!" }]);
-            }
-        }
-    };
 
     const chatRef = useRef(null);
 

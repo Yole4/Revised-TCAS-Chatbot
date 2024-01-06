@@ -1,15 +1,43 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Header from '../Header';
 import { useParams } from 'react-router-dom';
 import { PublicContext } from '../../Context/PublicContext';
 import { backendUrl } from '../../../utils/Services';
 import { AuthContext } from '../../Context/AuthContext';
 
+// pdf viewer
+import { Viewer, Worker } from '@react-pdf-viewer/core';
+import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
+import '@react-pdf-viewer/core/lib/styles/index.css';
+import '@react-pdf-viewer/default-layout/lib/styles/index.css';
+
+import { AdminContext } from '../../Context/AdminContext';
+
+
 function ViewProject() {
     const projectId = useParams();
 
     const { archiveFiles } = useContext(PublicContext);
-    const {userCredentials} = useContext(AuthContext);
+    const { userCredentials, isLoading, setErrorResponse, errorResponse, user } = useContext(AuthContext);
+    const { setArchiveId, requestData, handleButtonRequest } = useContext(AdminContext);
+
+    // reset response after 5 seconds
+    const [responseCountDown, setResponseCountDown] = useState(false);
+    useEffect(() => {
+        if (errorResponse) {
+            setResponseCountDown(true);
+            setTimeout(() => {
+                setResponseCountDown(false);
+                setErrorResponse(null);
+            }, 5000);
+        }
+    }, [errorResponse]);
+
+    useEffect(() => {
+        if (projectId) {
+            setArchiveId(projectId.id);
+        }
+    }, [projectId]);
 
     return (
         <>
@@ -29,7 +57,7 @@ function ViewProject() {
                                     {archiveFiles && archiveFiles.map(item => (
                                         item.id === (projectId.id) - 1000 && (
                                             <div className="container-fluid">
-                                                <h2><b>{ item.project_title}</b></h2>
+                                                <h2><b>{item.project_title}</b></h2>
                                                 <small className="text-muted">Submitted by <b className="text-info">Admin</b> {item.date}</small>
                                                 <hr />
                                                 <center>
@@ -54,30 +82,30 @@ function ViewProject() {
                                                     </large>
                                                     </div>
                                                 </fieldset>
-                                                {/* <fieldset>
-                                                    {userCredentials && userCredentials.user_type === "Admin" || requestData && requestData.status === "Approved" ? (
-                                                        <>
-                                                            <legend className="text-navy">Project Document:</legend>
-                                                            <div className="pl-4">
-                                                                <iframe src={archiveFiles && `${backendUrl}/${archiveFiles.file_path}`} style={{ minHeight: '80vh' }} className="text-center w-100">Loading Document ...</iframe>
-                                                            </div>
-                                                        </>
-                                                    ) : userCredentials && userCredentials.user_type === "Researcher" ? (
-                                                        (requestData && requestData.status === "Pending" ? (
-                                                            <div style={{ textAlign: 'center', margin: '10px' }}>
-                                                                <span style={{ padding: '10px', background: 'red', color: '#fff', borderRadius: '3px' }}>Requested</span>
-                                                            </div>
+                                                <fieldset>
+                                                    {user && (
+                                                        userCredentials && userCredentials.user_type === "Admin" || requestData && requestData.status === "Approved" ? (
+                                                            <>
+                                                                <legend className="text-navy">Project Document:</legend>
+                                                                <div className="pl-4">
+                                                                    <iframe src={`${backendUrl}/${item.file_path}`} style={{ minHeight: '80vh' }} className="text-center w-100">Loading Document ...</iframe>
+                                                                </div>
+                                                            </>
                                                         ) : (
-                                                            <div style={{ textAlign: 'center', margin: '10px' }}>
-                                                                <button style={{ padding: '10px' }} className='btn btn-primary' onClick={requestToViewDocument}>Request To View Document</button>
-                                                            </div>
-                                                        ))
-                                                    ) : (
-                                                        <div style={{ textAlign: 'center', margin: '10px' }}>
-                                                            <button style={{ padding: '10px' }} className='btn btn-primary' onClick={() => alert('You need to login for you to request!')}>Request To View Document</button>
-                                                        </div>
+                                                            requestData ? (
+                                                                requestData && requestData.status === "Pending" && (
+                                                                    <div style={{ textAlign: 'center', margin: '10px' }}>
+                                                                        <span style={{ padding: '10px', background: 'red', color: '#fff', borderRadius: '3px' }}>Pending Request</span>
+                                                                    </div>
+                                                                )
+                                                            ) : (
+                                                                <div style={{ textAlign: 'center', margin: '10px' }}>
+                                                                    <button style={{ padding: '10px' }} className='btn btn-primary' onClick={() => handleButtonRequest(item)}>Request To View Document</button>
+                                                                </div>
+                                                            )
+                                                        )
                                                     )}
-                                                </fieldset> */}
+                                                </fieldset>
                                             </div>
                                         )
                                     ))}
@@ -87,6 +115,23 @@ function ViewProject() {
                     </div>
                 </div>
             </section >
+
+            {isLoading && (
+                <div className="popup">
+                    <button class="btn btn-primary" type="button" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} disabled>
+                        <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true" style={{ marginRight: '10px' }}></span>
+                        Loading...
+                    </button>
+                </div>
+            )}
+
+            {responseCountDown && errorResponse && (
+                <div className='error-respond' style={{ backgroundColor: errorResponse && !errorResponse.isError ? '#7b4ae4' : '#fb7d60' }}>
+                    <div>
+                        <h5>{errorResponse && errorResponse.message}</h5>
+                    </div>
+                </div>
+            )}
         </>
     )
 }

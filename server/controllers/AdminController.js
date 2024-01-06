@@ -6,8 +6,8 @@ const sanitizeHtml = require('sanitize-html');
 const fs = require('fs');
 const mime = require('mime-types');
 require('dotenv').config();
-const { sanitizeAndValidate, sanitizeAndValidateArray } = require('../validator and sanitizer/ValidatorAndSanitizer');
-const { processFile } = require('../scan document/ScanDocument');
+const { sanitizeAndValidate, sanitizeAndValidateArray } = require('../components/validator and sanitizer/ValidatorAndSanitizer');
+const { processFile } = require('../components/scan document/ScanDocument');
 
 // add new archive file
 const addNewArchiveFile = async (req, res) => {
@@ -804,7 +804,7 @@ const deleteArchive = async (req, res) => {
 // get all requested users
 const getUserRequest = async (req, res) => {
     const getRequest = `
-        SELECT users.id, users.image, users.first_name, users.middle_name, users.last_name, user_file_request.*, archive_files.project_title
+        SELECT users.id, users.image, users.fullname, user_file_request.*, archive_files.project_title
         FROM user_file_request
         INNER JOIN users ON user_file_request.user_request_id = users.id
         INNER JOIN archive_files ON user_file_request.project_id = archive_files.id
@@ -822,7 +822,124 @@ const getUserRequest = async (req, res) => {
     });
 }
 
+// get user request by id
+const getRequestId = async (req, res) => {
+    const { userId, archiveId } = req.body;
+
+    const validationRules = [
+        { validator: validator.isLength, options: { min: 1 } },
+    ];
+
+    const projectId = (archiveId - 1000).toString();
+    const sanitizeUserId = sanitizeAndValidate(userId, validationRules);
+    const sanitizeProjectId = sanitizeAndValidate(projectId, validationRules);
+
+    // fetch
+    const fetchStatus = `SELECT * FROM user_file_request WHERE user_request_id = ? AND project_id = ? AND isDelete = ?`;
+    db.query(fetchStatus, [sanitizeUserId, sanitizeProjectId, "not"], (error, results) => {
+        if (error) {
+            res.status(401).json({ message: "Server side error!" });
+        } else {
+            res.status(200).json({ message: results[0] });
+        }
+    });
+}
+
+// add new user request
+const addRequest = async (req, res) => {
+    const { archiveId, userId, fullname, projectTitle } = req.body;
+
+    const validationRules = [
+        { validator: validator.isLength, options: { min: 1 } },
+    ];
+
+    const sanitizeArchiveId = sanitizeAndValidate(archiveId, validationRules);
+    const sanitizeUserId = sanitizeAndValidate(userId, validationRules);
+    const sanitizeFullName = sanitizeAndValidate(fullname, validationRules);
+    const sanitizeProjectTitle = sanitizeAndValidate(projectTitle, validationRules);
+
+    if (!sanitizeArchiveId || !sanitizeUserId) {
+        res.status(401).json({ message: "Invalid Input!" });
+    }
+    else {
+        // insert to request
+        const insertRequest = `INSERT INTO user_file_request (user_request_id, project_id) VALUES (?, ?)`;
+        db.query(insertRequest, [sanitizeUserId, sanitizeArchiveId], (error, results) => {
+            if (error) {
+                res.status(401).json({ message: "Server side error!" });
+            } else {
+                // insert notification
+                const insertNotification = `INSERT INTO notifications (user_id, notification_type, content) VALUES (?, ?, ?)`;
+                db.query(insertNotification, ["1", "Request Document", `${sanitizeFullName} requested to view the document of ${sanitizeProjectTitle}`], (error, results) => {
+                    if (error) {
+                        res.status(401).json({ message: "Server side error!" });
+                    } else {
+                        res.status(200).json({ message: "Request send successfully!" });
+                    }
+                });
+            }
+        });
+    }
+}
+
+// request response
+const requestResponse = async (req, res) => {
+    const { userId, acceptId, userRequestId, currentStatus, fullname, projectTitle } = req.body;
+
+    const validationRules = [
+        { validator: validator.isLength, options: { min: 1 } },
+    ];
+
+    const sanitizeUserId = sanitizeAndValidate(userId, validationRules);
+    const sanitizeAcceptId = sanitizeAndValidate(acceptId, validationRules);
+    const sanitizeUserRequestId = sanitizeAndValidate(userRequestId, validationRules);
+    const sanitizeCurrentStatus = sanitizeAndValidate(currentStatus, validationRules);
+    const sanitizeFullname = sanitizeAndValidate(fullname, validationRules);
+    const sanitizeProjectTitle = sanitizeAndValidate(projectTitle, validationRules);
+
+    if (!sanitizeUserId || !sanitizeAcceptId || !sanitizeUserRequestId) {
+        res.status(401).json({ message: "Invalid Input!" });
+    } else {
+        // update status
+        const acceptStatus = `UPDATE user_file_request SET status = ? WHERE id = ?`;
+        db.query(acceptStatus, [sanitizeCurrentStatus, sanitizeAcceptId], (error, resulsts) => {
+            if (error) {
+                res.status(401).json({ message: "Server side error!" });
+            } else {
+                // insert notification for the admin
+                let admiNContent = '', userContent = '', successMessage = '';
+                if (sanitizeCurrentStatus === "Approved") {
+                    successMessage = `${sanitizeProjectTitle} has been approved`;
+                    userContent = `Your request on ${sanitizeProjectTitle} was been approved by the admin!`;
+                    admiNContent = `You have approved ${sanitizeFullname} to view the document on the ${sanitizeProjectTitle}.`
+                } else {
+                    admiNContent = `You have been set the status of ${sanitizeFullname} to Pending`;
+                    userContent = `Your request on ${sanitizeProjectTitle} was been Disapproved by Admin`;
+                    successMessage = `${sanitizeProjectTitle} has been successfully set to Pending`;
+                }
+                const insertNotification = `INSERT INTO notifications (user_id, notification_type, content) VALUES (?, ?, ?)`;
+                db.query(insertNotification, [sanitizeUserId, "Request Document", admiNContent], (error, results) => {
+                    if (error) {
+                        res.status(401).json({ message: "Server side error!" });
+                    } else {
+                        // insert notification for the user
+                        const insertNotUser = `INSERT INTO notifications (user_id, notification_type, content) VALUES (?, ?, ?)`;
+                        db.query(insertNotUser, [sanitizeUserRequestId, "User Request", userContent], (error, results) => {
+                            if (error) {
+                                res.status(401).json({ message: "Server side error!" });
+                            } else {
+                                // success message
+                                res.status(200).json({ message: successMessage });
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    }
+}
+
 module.exports = {
     addNewArchiveFile, fetchDepartment, addDepartment, editDepartment, deleteDepartment, fetchCourse, addCourse, editCourse, deleteCourse, fetchSchoolYear, addSY, editSY, deleteSY,
-    fetchUsers, deleteUser, updateSettings, updateSystemCover, updateSystemLogo, scanDocument, addProject, updateArchiveStatus, deleteArchive, getUserRequest
+    fetchUsers, deleteUser, updateSettings, updateSystemCover, updateSystemLogo, scanDocument, addProject, updateArchiveStatus, deleteArchive, getUserRequest, getRequestId, addRequest, requestResponse
 };

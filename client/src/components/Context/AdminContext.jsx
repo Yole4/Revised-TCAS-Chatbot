@@ -731,6 +731,7 @@ export const AdminContextProvider = ({ children }) => {
 
     // #####################################################################    FETCH REQUESTED USERS  ####################################################################
     const [usersRequestList, setUsersRequestList] = useState([]);
+    const [requestMount, setRequestMount] = useState(false);
 
     useEffect(() => {
         if (userId) {
@@ -754,7 +755,94 @@ export const AdminContextProvider = ({ children }) => {
             };
             getUserRequest();
         }
-    }, [userId]);
+    }, [userId, requestMount]);
+
+    // #####################################################################    FETCH ARCHIVE ID REQUEST  ####################################################################
+    const [archiveId, setArchiveId] = useState('');
+    const [requestData, setRequestData] = useState([]);
+
+    useEffect(() => {
+        if (archiveId) {
+            const fetchId = async (e) => {
+                setIsLoading(true);
+
+                try {
+                    const response = await apostRequest(`${backendUrl}/api/admin/request-id`, {archiveId, userId: userId.toString()});
+
+                    setIsLoading(false);
+
+                    if (response.error) {
+                        console.log(response.message);
+                    }else{
+                        setRequestData(response.message);
+                    }
+                } catch (error) {
+                    setIsLoading(false);
+                    console.log("Error: ", error);
+                }
+            };
+            fetchId();
+        }
+    }, [archiveId, userId, requestMount]);
+
+    // ##########################################################################   REQUEST USER    ############################################################################
+    const handleButtonRequest = async (item) => {
+        const archiveId = item.id.toString();
+        const projectTitle = item.project_title;
+        const fullname = userCredentials && userCredentials.fullname;
+
+        setIsLoading(true);
+
+        try {
+            const response = await apostRequest(`${backendUrl}/api/admin/user-request`, {archiveId, projectTitle, fullname, userId: userId.toString()});
+
+            setIsLoading(false);
+
+            if (response.error) {
+                setErrorResponse({message: response.message, isError: true});
+            }else{
+                setErrorResponse({message: response.message, isError: false});
+                setRequestMount(requestMount ? false : true);
+
+            }
+        } catch (error) {
+            setIsLoading(false);
+            console.log("Error: ",error);    
+        }
+    }
+
+    // ##########################################################################   ACCEPT/DECLINE USER REQUEST    ############################################################################
+    const handleAccept = async (item) => {
+        let currentStatus = '';
+        if (item.status === "Approved"){
+            currentStatus = 'Pending';
+        }else{
+            currentStatus = "Approved";
+        }
+
+        const fullname = userCredentials.fullname;
+        const projectTitle = item.project_title;
+        const acceptId = item.id.toString();
+        const userRequestId = item.user_request_id.toString();
+
+        setIsLoading(true);
+
+        try {
+            const response = await apostRequest(`${backendUrl}/api/admin/request-response`, {fullname, projectTitle, acceptId, userId: userId.toString(), userRequestId, currentStatus});
+
+            setIsLoading(false);
+
+            if (response.error) {
+                setErrorResponse({message: response.message, isError: true});
+            }else{
+                setErrorResponse({message: response.message, isError: false});
+                setRequestMount(requestMount ? false : true);
+            }
+        } catch (error) {
+            setIsLoading(false);
+            console.log("Error: ", error);
+        }
+    }
 
     return <AdminContext.Provider value={{
         addDepartmentData,
@@ -788,6 +876,7 @@ export const AdminContextProvider = ({ children }) => {
         handleImageChange, imagePreview, handleSubmitProject, archiveFilesMount,
         updateFileData, setUpdateFileData, handleUpdateFile, isUpdateFile, setIsUpdateFile,
         deleteArchiveData, setDeleteArchiveData, handleDeleteArchive, isDeleteArchive, setIsDeleteArchive,
-        usersRequestList
+        usersRequestList, setArchiveId, requestData,
+        handleButtonRequest, handleAccept
     }}>{children}</AdminContext.Provider>
 }

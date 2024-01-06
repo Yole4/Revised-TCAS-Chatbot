@@ -81,7 +81,7 @@ function Users() {
                                                         usersList.map((item, index) => (
                                                             <tr>
                                                                 <td className="text-center">{index + 1}</td>
-                                                                <td className="text-center"><img src={`${backendUrl}/${item.image}`} style={{ height: '40px', width: '40px', borderRadius: '50%' }} className="img-avatar img-thumbnail p-0 border-2" alt="user_avatar" /></td>
+                                                                <td className="text-center"><img src={item.image.startsWith("https:") ? item.image : `${backendUrl}/${item.image}`} style={{ height: '40px', width: '40px', borderRadius: '50%' }} className="img-avatar img-thumbnail p-0 border-2" alt="user_avatar" /></td>
                                                                 <td>{item.fullname}</td>
                                                                 <td><p className="m-0 truncate-1">{item.email}</p></td>
                                                                 <td align="center">

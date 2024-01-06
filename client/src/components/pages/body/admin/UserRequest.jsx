@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Sidebar from './Sidebar'
 import Header from './Header'
 
@@ -6,11 +6,25 @@ import Header from './Header'
 import { BiSearch } from "react-icons/bi";
 import { AdminContext } from '../../../Context/AdminContext';
 import { backendUrl } from '../../../../utils/Services';
+import { AuthContext } from '../../../Context/AuthContext';
 
 function UserRequest() {
     document.title = "Users Request";
 
-    const {usersRequestList} = useContext(AdminContext);
+    const { usersRequestList, handleAccept } = useContext(AdminContext);
+    const { isLoading, setErrorResponse, errorResponse } = useContext(AuthContext);
+
+    // reset response after 5 seconds
+    const [responseCountDown, setResponseCountDown] = useState(false);
+    useEffect(() => {
+        if (errorResponse) {
+            setResponseCountDown(true);
+            setTimeout(() => {
+                setResponseCountDown(false);
+                setErrorResponse(null);
+            }, 5000);
+        }
+    }, [errorResponse]);
     return (
         <>
             <Header />
@@ -67,7 +81,7 @@ function UserRequest() {
                                                         usersRequestList.map((item, index) => (
                                                             <tr>
                                                                 <td className="text-center">{index + 1}</td>
-                                                                <td className="text-center"><img src={`${backendUrl}/${item.image}`} style={{ height: '40px', width: '40px', borderRadius: '50%' }} className="img-avatar img-thumbnail p-0 border-2" alt="user_avatar" /></td>
+                                                                <td className="text-center"><img src={item.image.startsWith("https:") ? item.image : `${backendUrl}/${item.image}`} style={{ height: '40px', width: '40px', borderRadius: '50%' }} className="img-avatar img-thumbnail p-0 border-2" alt="user_avatar" /></td>
                                                                 <td>{item.fullname}</td>
                                                                 <td><p className="m-0 truncate-1">{item.project_title}</p></td>
                                                                 <td >
@@ -80,7 +94,7 @@ function UserRequest() {
                                                                     <div className="dropdown-menu" role="menu">
                                                                         <a class="dropdown-item" target='_blank' href={`/view-project/${1000 + item.project_id}`} style={{ cursor: 'pointer' }}><span class="fa fa-external-link-alt text-gray"></span> View</a>
                                                                         <div class="dropdown-divider"></div>
-                                                                        <a class="dropdown-item update_status" style={{ cursor: 'pointer' }} ><span class="fa fa-check text-dark"></span>{item.status === "Approved" ? ' Decline' : ' Accept'}</a>
+                                                                        <a class="dropdown-item update_status" style={{ cursor: 'pointer' }} onClick={() => handleAccept(item)}><span class="fa fa-check text-dark"></span>{item.status === "Approved" ? ' Decline' : ' Accept'}</a>
                                                                     </div>
                                                                 </td>
                                                             </tr>
@@ -98,6 +112,23 @@ function UserRequest() {
                 </section>
 
             </div>
+
+            {isLoading && (
+                <div className="popup">
+                    <button class="btn btn-primary" type="button" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} disabled>
+                        <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true" style={{ marginRight: '10px' }}></span>
+                        Loading...
+                    </button>
+                </div>
+            )}
+
+            {responseCountDown && errorResponse && (
+                <div className='error-respond' style={{ backgroundColor: errorResponse && !errorResponse.isError ? '#7b4ae4' : '#fb7d60' }}>
+                    <div>
+                        <h5>{errorResponse && errorResponse.message}</h5>
+                    </div>
+                </div>
+            )}
         </>
     )
 }

@@ -6,6 +6,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { AuthContextProvider } from './components/Context/AuthContext';
 import { PublicContextProvider } from './components/Context/PublicContext';
 import { AdminContextProvider } from './components/Context/AdminContext';
+import { ChatbotContextProvider } from './components/Context/ChatbotContext';
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
@@ -13,7 +14,9 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       <AuthContextProvider>
         <AdminContextProvider>
           <PublicContextProvider >
-            <App />
+            <ChatbotContextProvider>
+              <App />
+            </ChatbotContextProvider>
           </PublicContextProvider>
         </AdminContextProvider>
       </AuthContextProvider>

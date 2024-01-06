@@ -9,6 +9,7 @@ const port = process.env.DB_PORT;
 const userRoutes = require('./routes/UsersRoutes');
 const publicRoutes = require('./routes/PublicRoutes');
 const adminRoutes = require('./routes/AdminRoutes');
+const chatbotRoutes = require('./routes/ChatbotRoutes');
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.use('/assets', express.static('assets'));
 app.use('/api/users', userRoutes);
 app.use('/api/public', publicRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/chatbot', chatbotRoutes);
 
 app.get('/', (req, res) => {
     res.send("Welcome to TCAS Backend");

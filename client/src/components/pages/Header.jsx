@@ -13,6 +13,7 @@ import { useContext } from 'react';
 import { AuthContext } from '../Context/AuthContext';
 import { backendUrl } from '../../utils/Services';
 import { PublicContext } from '../Context/PublicContext';
+import { AdminContext } from '../Context/AdminContext';
 
 function Header() {
 
@@ -22,6 +23,7 @@ function Header() {
     } = useContext(AuthContext);
 
     const {publicLoading, settingsData} = useContext(PublicContext);
+    const {departmentToSearch, courseList} = useContext(AdminContext);
 
     const location = useLocation();
     const navigate = useNavigate();
@@ -149,7 +151,7 @@ function Header() {
                             <li className="nav-item dropdown">
                                 <a id="dropdownSubMenu1" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" className={location.pathname === '/department' ? 'nav-link dropdown-toggle active' : 'nav-link dropdown-toggle'} >Department</a>
                                 <ul aria-labelledby="dropdownSubMenu1" className="dropdown-menu border-0 shadow" style={{ left: 0, right: 'inherit' }}>
-                                    {/* {departmentList && departmentList.map(item => (
+                                    {departmentToSearch && departmentToSearch.map(item => (
                                         item.status === "Active" && (
                                             <>
                                                 <li key={item.id}>
@@ -158,22 +160,23 @@ function Header() {
                                                 <li className="dropdown-divider" />
                                             </>
                                         )
-                                    ))} */}
+                                    ))}
                                 </ul>
                             </li>
                             <li className="nav-item dropdown">
                                 <a id="dropdownSubMenu1" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" className={location.pathname === '/courses' ? 'nav-link dropdown-toggle active' : 'nav-link dropdown-toggle'}>Courses</a>
                                 <ul aria-labelledby="dropdownSubMenu1" className="dropdown-menu border-0 shadow" style={{ left: 0, right: 'inherit' }}>
-                                    {/* {coursesList && coursesList.map(item => (
+                                    {courseList && courseList.map(item => (
                                         item.status === "Active" && (
                                             <>
                                                 <li key={item.id}>
-                                                    <a href="./?page=projects_per_department&id=3" className="dropdown-item">{item.course}</a>
+                                                    <a href={`/view-project/${1000 + item.project_id}`} className="dropdown-item">{item.course}</a>
+                                                    {/* <a href={`/view-project/${1000 + item.project_id}`} className="dropdown-item">{item.course}</a> */}
                                                 </li>
                                                 <li className="dropdown-divider" />
                                             </>
                                         )
-                                    ))} */}
+                                    ))}
                                 </ul>
                             </li>
                             <li className="nav-item" style={{ cursor: 'pointer' }} onClick={() => navigate('/about')}>

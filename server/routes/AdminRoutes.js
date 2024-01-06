@@ -2,7 +2,7 @@ const express = require('express');
 const {verifyToken} = require('../auth/Authentication');
 const multer = require('multer');
 
-const { addNewArchiveFile, fetchDepartment, addDepartment, editDepartment, deleteDepartment, fetchCourse, editCourse, deleteCourse, addCourse, fetchSchoolYear, addSY, editSY, deleteSY, fetchUsers, deleteUser, updateSettings, updateSystemLogo, updateSystemCover, scanDocument, addProject, updateArchiveStatus, deleteArchive, getUserRequest } = require('../controllers/AdminController');
+const { addNewArchiveFile, fetchDepartment, addDepartment, editDepartment, deleteDepartment, fetchCourse, editCourse, deleteCourse, addCourse, fetchSchoolYear, addSY, editSY, deleteSY, fetchUsers, deleteUser, updateSettings, updateSystemLogo, updateSystemCover, scanDocument, addProject, updateArchiveStatus, deleteArchive, getUserRequest, getRequestId, addRequest, requestResponse } = require('../controllers/AdminController');
 
 const router = express.Router();
 
@@ -41,5 +41,8 @@ router.post('/add-project', verifyToken, uploadBannerImage.single('bannerImage')
 router.post('/update-archive-status', verifyToken, updateArchiveStatus);
 router.post('/delete-archive', verifyToken, deleteArchive);
 router.get('/get-users-request', verifyToken, getUserRequest);
+router.post('/request-id', verifyToken, getRequestId);
+router.post('/user-request', verifyToken, addRequest);
+router.post('/request-response', verifyToken, requestResponse);
 
 module.exports = router;

@@ -6,7 +6,7 @@ const sanitizeHtml = require('sanitize-html');
 const fs = require('fs');
 const mime = require('mime-types');
 require('dotenv').config();
-const { sanitizeAndValidate, sanitizeAndValidateArray } = require('../validator and sanitizer/ValidatorAndSanitizer');
+const { sanitizeAndValidate, sanitizeAndValidateArray } = require('../components/validator and sanitizer/ValidatorAndSanitizer');
 
 const { OAuth2Client } = require('google-auth-library');
 
