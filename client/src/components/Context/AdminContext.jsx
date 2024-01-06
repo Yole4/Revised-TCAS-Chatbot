@@ -466,19 +466,19 @@ export const AdminContextProvider = ({ children }) => {
         setErrorResponse(null);
 
         try {
-            const response = await apostRequest(`${backendUrl}/api/admin/update-settings`, {updateSettingsData, userId: userId.toString()});
+            const response = await apostRequest(`${backendUrl}/api/admin/update-settings`, { updateSettingsData, userId: userId.toString() });
 
             setIsLoading(false);
 
             if (response.error) {
-                setErrorResponse({message: response.message, isError: true});
-            }else{
-                setErrorResponse({message: response.message, isError: false});
+                setErrorResponse({ message: response.message, isError: true });
+            } else {
+                setErrorResponse({ message: response.message, isError: false });
                 setSettingsMount(settingsMount ? false : true);
             }
         } catch (error) {
             setIsLoading(false);
-            console.log("Error: ",error);
+            console.log("Error: ", error);
         }
     }
 
@@ -501,9 +501,9 @@ export const AdminContextProvider = ({ children }) => {
                     setIsLoading(false);
 
                     if (response.error) {
-                        setErrorResponse({message: response.message, isError: true});
-                    }else{
-                        setErrorResponse({message: response.message, isError: false});
+                        setErrorResponse({ message: response.message, isError: true });
+                    } else {
+                        setErrorResponse({ message: response.message, isError: false });
                         setSettingsMount(settingsMount ? false : true);
                     }
                 } catch (error) {
@@ -534,9 +534,9 @@ export const AdminContextProvider = ({ children }) => {
                     setIsLoading(false);
 
                     if (response.error) {
-                        setErrorResponse({message: response.message, isError: true});
-                    }else{
-                        setErrorResponse({message: response.message, isError: false});
+                        setErrorResponse({ message: response.message, isError: true });
+                    } else {
+                        setErrorResponse({ message: response.message, isError: false });
                         setSettingsMount(settingsMount ? false : true);
                     }
                 } catch (error) {
@@ -547,6 +547,214 @@ export const AdminContextProvider = ({ children }) => {
             autoImage();
         }
     }, [cover]);
+
+    // #####################################################################    ADD ARCHIVE FILE  ####################################################################
+    const [archiveFile, setArchiveFile] = useState(null);
+    const [isAlert, setIsAlert] = useState(false);
+    const [archiveFilesMount, setArchiveFileMount] = useState(false);
+    const [submitThesisAndCapstone, setSubmitThesisAndCapstone] = useState({
+        foundAbstract: '',
+        pageNumber: '',
+        fileName: '',
+        department: '',
+        course: '',
+        schoolYear: '',
+        projectTitle: '',
+        members: '',
+        bannerImage: null
+    });
+
+    // ------- get the abstract -----------
+    useEffect(() => {
+        if (archiveFile) {
+            setIsLoading(true);
+            setErrorResponse(null);
+
+            const requestAbstract = async () => {
+                const data = new FormData();
+                data.append('archiveFile', archiveFile);
+
+                try {
+                    const response = await apostRequest(`${backendUrl}/api/admin/scan-document`, data);
+
+                    setIsLoading(false);
+
+                    if (response.error) {
+                        if (response.message === "No Abstract Found! Please check your PDF file and upload again!") {
+                            setIsAlert(true);
+                        } else {
+                            setErrorResponse({ message: response.message, isError: true });
+                        }
+                    } else {
+                        setSubmitThesisAndCapstone((prev) => ({ ...prev, foundAbstract: response.foundAbstract }));
+                        setSubmitThesisAndCapstone((prev) => ({ ...prev, pageNumber: response.pageNumber }));
+                        setSubmitThesisAndCapstone((prev) => ({ ...prev, fileName: response.fileName }));
+                    }
+                } catch (error) {
+                    setIsLoading(false);
+                    console.log("Error: ", error);
+                }
+            };
+            requestAbstract();
+        }
+    }, [archiveFile]);
+
+    // image preview
+    const [imagePreview, setImagePreview] = useState(null);
+
+    const handleImageChange = (e) => {
+        const selectedImage = e.target.files[0];
+
+        if (selectedImage) {
+            const reader = new FileReader();
+
+            reader.onload = (e) => {
+                setSubmitThesisAndCapstone({
+                    ...submitThesisAndCapstone,
+                    bannerImage: selectedImage,
+                });
+                setImagePreview(e.target.result);
+            };
+
+            reader.readAsDataURL(selectedImage);
+        }
+    };
+
+    const handleSubmitProject = async (e) => {
+        e.preventDefault();
+
+        if (submitThesisAndCapstone.foundAbstract === "") {
+            setIsAlert(true);
+        } else {
+            setIsLoading(true);
+            setErrorResponse(null);
+
+            const addProject = new FormData();
+            addProject.append('userId', userId.toString());
+            for (const key in submitThesisAndCapstone) {
+                if (submitThesisAndCapstone[key] !== null) {
+                    addProject.append(key, submitThesisAndCapstone[key]);
+                }
+            }
+
+            try {
+                const response = await apostRequest(`${backendUrl}/api/admin/add-project`, addProject);
+
+                setIsLoading(false);
+
+                if (response.error) {
+                    setErrorResponse({ message: response.message, isError: true });
+                } else {
+                    setErrorResponse({ message: response.message, isError: false });
+                    setSubmitThesisAndCapstone({
+                        foundAbstract: '',
+                        pageNumber: '',
+                        fileName: '',
+                        department: '',
+                        course: '',
+                        schoolYear: '',
+                        projectTitle: '',
+                        members: '',
+                        bannerImage: null
+                    });
+                    setArchiveFileMount(archiveFilesMount ? false : true);
+                }
+            } catch (error) {
+                console.log("Error: ", error);
+                setIsLoading(false);
+            }
+        }
+    }
+
+    // #####################################################################    UPDATE ARCHIVE FILE STATUS  ####################################################################
+    const [updateFileData, setUpdateFileData] = useState({
+        editId: '',
+        projectTitle: '',
+        status: ''
+    });
+    const [isUpdateFile, setIsUpdateFile] = useState(false);
+
+    const handleUpdateFile = async (e) => {
+        e.preventDefault();
+
+        setIsLoading(true);
+        setErrorResponse(null);
+
+        try {
+            const response = await apostRequest(`${backendUrl}/api/admin/update-archive-status`, {updateFileData, userId: userId.toString()});
+
+            setIsLoading(false);
+
+            if (response.error){
+                setErrorResponse({message: response.message, isError: true});
+            }else{
+                setErrorResponse({message: response.message, isError: false});
+                setIsUpdateFile(false);
+                setArchiveFileMount(archiveFilesMount ? false : true);
+            }
+        } catch (error) {
+            console.log("Error", error);
+            setIsLoading(false);
+        }
+    }
+
+    // #####################################################################    DELETE ARCHIVE FILE STATUS  ####################################################################
+    const [deleteArchiveData, setDeleteArchiveData] = useState({
+        deleteId: '',
+        projectTitle: ''
+    });
+    const [isDeleteArchive, setIsDeleteArchive] = useState(false);
+
+    const handleDeleteArchive = async (e) => {
+        e.preventDefault();
+
+        setIsLoading(true);
+        setErrorResponse(null);
+
+        try {
+            const response = await apostRequest(`${backendUrl}/api/admin/delete-archive`, {deleteArchiveData, userId: userId.toString()});
+
+            setIsLoading(false);
+
+            if (response.error) {
+                setErrorResponse({message: response.message, isError: true});
+            }else{
+                setErrorResponse({message: response.message, isError: false});
+                setIsDeleteArchive(false);
+                setArchiveFileMount(archiveFilesMount ? false : true);
+            }
+        } catch (error) {
+            console.log("Error: ",error);
+            setIsLoading(false);
+        }
+    }
+
+    // #####################################################################    FETCH REQUESTED USERS  ####################################################################
+    const [usersRequestList, setUsersRequestList] = useState([]);
+
+    useEffect(() => {
+        if (userId) {
+            const getUserRequest = async (e) => {
+                setIsLoading(true);
+
+                try {
+                    const response = await agetRequest(`${backendUrl}/api/admin/get-users-request`);
+
+                    setIsLoading(false);
+
+                    if (response.error){
+                        console.log(response.message);
+                    }else{
+                        setUsersRequestList(response.message);
+                    }
+                } catch (error) {
+                    setIsLoading(false);
+                    console.log("Error: ",error);
+                }
+            };
+            getUserRequest();
+        }
+    }, [userId]);
 
     return <AdminContext.Provider value={{
         addDepartmentData,
@@ -575,6 +783,11 @@ export const AdminContextProvider = ({ children }) => {
         deleteUserData, setDeleteUserData, isDeleteUser, setIsDeleteUser, handleDeleteUser,
         updateSettingsData, handleUpdateSettings, setUpdateSettingsData,
         settingsMount, setSettingsMount,
-        setLogo, setCover
+        setLogo, setCover,
+        archiveFile, setArchiveFile, submitThesisAndCapstone, setSubmitThesisAndCapstone, isAlert, setIsAlert,
+        handleImageChange, imagePreview, handleSubmitProject, archiveFilesMount,
+        updateFileData, setUpdateFileData, handleUpdateFile, isUpdateFile, setIsUpdateFile,
+        deleteArchiveData, setDeleteArchiveData, handleDeleteArchive, isDeleteArchive, setIsDeleteArchive,
+        usersRequestList
     }}>{children}</AdminContext.Provider>
 }

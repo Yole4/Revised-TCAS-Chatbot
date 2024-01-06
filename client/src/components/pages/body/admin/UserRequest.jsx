@@ -1,12 +1,16 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import Sidebar from './Sidebar'
 import Header from './Header'
 
 // react icons
 import { BiSearch } from "react-icons/bi";
+import { AdminContext } from '../../../Context/AdminContext';
+import { backendUrl } from '../../../../utils/Services';
 
 function UserRequest() {
     document.title = "Users Request";
+
+    const {usersRequestList} = useContext(AdminContext);
     return (
         <>
             <Header />
@@ -55,16 +59,16 @@ function UserRequest() {
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {/* {requestedUsersToSearch.length === 0 ? (
+                                                    {usersRequestList.length === 0 ? (
                                                         <div style={{ position: 'absolute', width: '90%', color: 'red', margin: '15px 0px 0px 10px', fontSize: '14px' }}>
                                                             <span>No Requested found!</span>
                                                         </div>
                                                     ) : (
-                                                        requestedUsersToSearch.map((item, index) => (
+                                                        usersRequestList.map((item, index) => (
                                                             <tr>
                                                                 <td className="text-center">{index + 1}</td>
                                                                 <td className="text-center"><img src={`${backendUrl}/${item.image}`} style={{ height: '40px', width: '40px', borderRadius: '50%' }} className="img-avatar img-thumbnail p-0 border-2" alt="user_avatar" /></td>
-                                                                <td>{`${item.first_name} ${item.middle_name} ${item.last_name}`}</td>
+                                                                <td>{item.fullname}</td>
                                                                 <td><p className="m-0 truncate-1">{item.project_title}</p></td>
                                                                 <td >
                                                                     <span className="badge badge-success badge-pill" style={{ background: item.status === 'Approved' ? '' : 'red' }}>{item.status}</span></td>
@@ -74,14 +78,14 @@ function UserRequest() {
                                                                         <span className="sr-only">Toggle Dropdown</span>
                                                                     </button>
                                                                     <div className="dropdown-menu" role="menu">
-                                                                        <a class="dropdown-item" target='_blank' href={`http://localhost:3000/view-project/${1000 + item.project_id}`} style={{ cursor: 'pointer' }}><span class="fa fa-external-link-alt text-gray"></span> View</a>
+                                                                        <a class="dropdown-item" target='_blank' href={`/view-project/${1000 + item.project_id}`} style={{ cursor: 'pointer' }}><span class="fa fa-external-link-alt text-gray"></span> View</a>
                                                                         <div class="dropdown-divider"></div>
-                                                                        <a class="dropdown-item update_status" style={{ cursor: 'pointer' }} onClick={() => handleAccept(item)} ><span class="fa fa-check text-dark"></span>{item.status === "Approved" ? ' Decline' : ' Accept'}</a>
+                                                                        <a class="dropdown-item update_status" style={{ cursor: 'pointer' }} ><span class="fa fa-check text-dark"></span>{item.status === "Approved" ? ' Decline' : ' Accept'}</a>
                                                                     </div>
                                                                 </td>
                                                             </tr>
                                                         ))
-                                                    )} */}
+                                                    )}
                                                 </tbody>
                                             </table>
 

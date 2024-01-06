@@ -7,6 +7,7 @@ const fs = require('fs');
 const mime = require('mime-types');
 require('dotenv').config();
 const { sanitizeAndValidate, sanitizeAndValidateArray } = require('../validator and sanitizer/ValidatorAndSanitizer');
+const { processFile } = require('../scan document/ScanDocument');
 
 // add new archive file
 const addNewArchiveFile = async (req, res) => {
@@ -608,7 +609,220 @@ const updateSystemCover = async (req, res) => {
     }
 }
 
+// scann document
+const scanDocument = async (req, res) => {
+    const originalFileName = req.file.originalname;
+
+    const uniqueFileName = `${Date.now()}_+_${originalFileName}`;
+    const uniqueFilePath = `assets/archive files/${uniqueFileName}`;
+
+    fs.rename(req.file.path, uniqueFilePath, (err) => {
+        if (err) {
+            res.status(401).json({ message: "Error moving the upload file!" });
+        }
+
+        else {
+            const sanitizedFileName = sanitizeHtml(req.file.originalname); // Sanitize HTML content
+            if (!validator.isLength(sanitizedFileName, { min: 1, max: 255 })) {
+                return res.status(401).send({ message: "Invalid File Name!" });
+            }
+            else {
+                if (req.file.size > 5242880) {
+                    res.status(401).json({ message: "File is too large!" });
+                }
+                else {
+                    // Check if the uploaded file has a PDF or DOCX extension
+                    const mimeType = mime.lookup(sanitizedFileName);
+                    if (mimeType !== 'application/pdf') {
+                        res.status(401).json({ message: "Invalid file type! Accept only PDF File!" })
+                    }
+                    else {
+
+                        processFile(uniqueFilePath)
+                            .then(pageTexts => {
+
+                                let isFound = false;
+                                let foundPage = [], foundAbstract = [];
+
+                                pageTexts.forEach((pageText, pageNum) => {
+                                    const pageNumber = pageNum;
+                                    const contentEveryPage = pageText.replace(/\s+/g, ' ');
+
+                                    if ((contentEveryPage).toLowerCase().includes("abstract")) {
+                                        foundPage.push(pageNumber);
+                                        foundAbstract.push(contentEveryPage);
+                                        isFound = true;
+                                        return true;
+                                    }
+                                });
+
+                                if (isFound) {
+                                    const splitFoundAbstract = foundAbstract[0].split(/abstract/i);
+
+                                    // console.log("\n",splitFoundAbstract, foundPage);
+                                    res.status(200).json({ foundAbstract: splitFoundAbstract[1], pageNumber: foundPage[0] + 1, fileName: uniqueFilePath });
+                                } else {
+                                    // Remove the file
+                                    fs.unlink(uniqueFilePath, (err) => {
+                                        if (err) {
+                                            console.error('Error deleting file:', err);
+                                        }
+                                    });
+                                    res.status(401).json({ message: "No Abstract Found! Please check your PDF file and upload again!" });
+                                }
+                            })
+                            .catch(error => {
+                                res.status(401).json({ message: "Something went wrong!" });
+                                console.error('Error extracting text from PDF', error);
+                            });
+                    }
+                }
+            }
+        }
+
+    });
+}
+
+// add project 
+const addProject = async (req, res) => {
+    const { foundAbstract, pageNumber, fileName, department, course, schoolYear, projectTitle, members, userId } = req.body;
+
+    const validationRules = [
+        { validator: validator.isLength, options: { min: 1 } },
+    ];
+
+    const submitFoundAbstract = sanitizeAndValidate(foundAbstract, validationRules);
+    const submitPageNumber = sanitizeAndValidate(pageNumber, validationRules);
+    const submitFileName = sanitizeAndValidate(fileName, validationRules);
+    const submitDepartment = sanitizeAndValidate(department, validationRules);
+    const submitCourse = sanitizeAndValidate(course, validationRules);
+    const submitSchoolYear = sanitizeAndValidate(schoolYear, validationRules);
+    const submitProjectTitle = sanitizeAndValidate(projectTitle, validationRules);
+    const submitMembers = sanitizeAndValidate(members, validationRules);
+    const sanitizeId = sanitizeAndValidate(userId, validationRules);
+
+    if (!submitFoundAbstract || !submitPageNumber || !submitFileName || !submitDepartment || !submitCourse || !submitSchoolYear || !submitProjectTitle || !submitMembers || !sanitizeId) {
+        res.status(401).json({ message: "Invalid Input!" });
+    } else {
+        const originalFileName = req.file.originalname;
+        const uniqueFileName = `${Date.now()}_+_${originalFileName}`;
+        const uniqueFilePath = `assets/banner image/${uniqueFileName}`;
+
+        const typeMime = mime.lookup(originalFileName);
+
+        if ((typeMime === 'image/png') || (typeMime === 'image/jpeg')) {
+            fs.rename(req.file.path, uniqueFilePath, (err) => {
+                if (err) {
+                    res.status(401).json({ message: "Error to upload file" });
+                } else {
+                    const sanitizedFileName = sanitizeHtml(req.file.originalname); // Sanitize HTML content
+                    if (!validator.isLength(sanitizedFileName, { min: 1, max: 255 })) {
+                        return res.status(401).send({ message: "Invalid File Name!" });
+                    }
+                    else {
+                        const insertNew = `INSERT INTO archive_files (abstract, page_number, file_path, department, course, school_year, project_title, members, image_banner) VALUES (?,?,?,?,?,?,?,?,?)`;
+                        db.query(insertNew, [submitFoundAbstract, submitPageNumber, submitFileName, submitDepartment, submitCourse, submitSchoolYear, submitProjectTitle, submitMembers, uniqueFilePath], (error, results) => {
+                            if (error) {
+                                res.status(401).json({ message: "Server side error!" });
+                            } else {
+                                // insert notification
+                                const insertNotification = `INSERT INTO notifications (user_id, notification_type, content) VALUES (?, ? ,?)`;
+                                db.query(insertNotification, [sanitizeId, "Add Project", `You've successfully added ${submitProjectTitle} to archive`], (error, results) => {
+                                    if (error) {
+                                        res.status(401).json({ message: "Server side error!" });
+                                    } else {
+                                        res.status(200).json({ message: `${submitProjectTitle} has been successfully added!` });
+                                    }
+                                });
+                            }
+                        });
+                    }
+                }
+            });
+        }
+        else {
+            res.status(401).json({ message: "Invalid Image Type!" });
+        }
+    }
+}
+
+// update archive status
+const updateArchiveStatus = async (req, res) => {
+    const { updateFileData, userId } = req.body;
+
+    const validationRules = [
+        { validator: validator.isLength, options: { min: 1 } },
+    ];
+
+    const sanitizeUserId = sanitizeAndValidate(userId, validationRules);
+    const sanitizeEditId = sanitizeAndValidate(updateFileData.editId.toString(), validationRules);
+    const sanitizeProjectTitle = sanitizeAndValidate(updateFileData.projectTitle, validationRules);
+    const sanitizeStatus = sanitizeAndValidate(updateFileData.status, validationRules);
+
+    if (!sanitizeUserId || !sanitizeEditId || !sanitizeProjectTitle || !sanitizeStatus) {
+        res.status(401).json({ message: "Server side error!" });
+    } else {
+        // update status
+        const updateStatus = `UPDATE archive_files SET status = ? WHERE id = ?`;
+        db.query(updateStatus, [sanitizeStatus, sanitizeEditId], (error, results) => {
+            if (error) {
+                res.status(401).json({ message: "Server side error!" });
+            } else {
+                res.status(200).json({ message: `Status Updated!` });
+            }
+        })
+    }
+}
+
+// delete archive
+const deleteArchive = async (req, res) => {
+    const { deleteArchiveData, userId } = req.body;
+
+    const validationRules = [
+        { validator: validator.isLength, options: { min: 1 } },
+    ];
+
+    const sanitizeUserId = sanitizeAndValidate(userId, validationRules);
+    const sanitizeDeleteId = sanitizeAndValidate(deleteArchiveData.deleteId.toString(), validationRules);
+    const sanitizeProjectTitle = sanitizeAndValidate(deleteArchiveData.projectTitle, validationRules);
+
+    if (!sanitizeUserId || !sanitizeDeleteId || !sanitizeProjectTitle) {
+        res.status(401).json({ message: "Invalid Input!" });
+    } else {
+        // delete archive
+        const updateArchive = `UPDATE archive_files SET isDelete = ? WHERE id = ?`;
+        db.query(updateArchive, ["Deleted", sanitizeDeleteId], (error, results) => {
+            if (error) {
+                res.status(401).json({ message: "Server side error!" });
+            } else {
+                res.status(200).json({ message: `${sanitizeProjectTitle} has been successfully deleted!` });
+            }
+        })
+    }
+}
+
+// get all requested users
+const getUserRequest = async (req, res) => {
+    const getRequest = `
+        SELECT users.id, users.image, users.first_name, users.middle_name, users.last_name, user_file_request.*, archive_files.project_title
+        FROM user_file_request
+        INNER JOIN users ON user_file_request.user_request_id = users.id
+        INNER JOIN archive_files ON user_file_request.project_id = archive_files.id
+        WHERE user_file_request.isDelete = ?`;
+    db.query(getRequest, ["not"], (error, results) => {
+        if (error) {
+            res.status(500).json({ message: "Server side error!" });
+        } else {
+            if (results.length > 0) {
+                res.status(200).json({ message: results });
+            } else {
+                res.status(404).json({ message: "No request found!" });
+            }
+        }
+    });
+}
+
 module.exports = {
     addNewArchiveFile, fetchDepartment, addDepartment, editDepartment, deleteDepartment, fetchCourse, addCourse, editCourse, deleteCourse, fetchSchoolYear, addSY, editSY, deleteSY,
-    fetchUsers, deleteUser, updateSettings, updateSystemCover, updateSystemLogo
+    fetchUsers, deleteUser, updateSettings, updateSystemCover, updateSystemLogo, scanDocument, addProject, updateArchiveStatus, deleteArchive, getUserRequest
 };

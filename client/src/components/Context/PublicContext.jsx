@@ -9,7 +9,7 @@ export const PublicContextProvider = ({ children }) => {
     const [publicLoading, setPublicLoading] = useState(false);
     const [publicMount, setPublicMount] = useState(false);
 
-    const { setUpdateSettingsData, settingsMount } = useContext(AdminContext);
+    const { setUpdateSettingsData, settingsMount, archiveFilesMount } = useContext(AdminContext);
 
     // ##########################################################   FETCH SETTINGS  ##################################################################
     const [settingsData, setSettingsData] = useState(null);
@@ -72,7 +72,7 @@ export const PublicContextProvider = ({ children }) => {
             }
         };
         fetchArchive();
-    }, []);
+    }, [archiveFilesMount]);
 
     return <PublicContext.Provider value={{
         publicLoading,

@@ -2,12 +2,20 @@ const express = require('express');
 const {verifyToken} = require('../auth/Authentication');
 const multer = require('multer');
 
-const { addNewArchiveFile, fetchDepartment, addDepartment, editDepartment, deleteDepartment, fetchCourse, editCourse, deleteCourse, addCourse, fetchSchoolYear, addSY, editSY, deleteSY, fetchUsers, deleteUser, updateSettings, updateSystemLogo, updateSystemCover } = require('../controllers/AdminController');
+const { addNewArchiveFile, fetchDepartment, addDepartment, editDepartment, deleteDepartment, fetchCourse, editCourse, deleteCourse, addCourse, fetchSchoolYear, addSY, editSY, deleteSY, fetchUsers, deleteUser, updateSettings, updateSystemLogo, updateSystemCover, scanDocument, addProject, updateArchiveStatus, deleteArchive, getUserRequest } = require('../controllers/AdminController');
 
 const router = express.Router();
 
 const settingsUpload = multer({
     dest: 'assets/settings image/',
+});
+
+const documentUpload = multer({
+    dest: 'assets/archive files/',
+});
+
+const uploadBannerImage = multer({
+    dest: 'assets/banner image/',
 });
 
 router.post('/add-new-archive', verifyToken, addNewArchiveFile);
@@ -28,5 +36,10 @@ router.post('/delete-user', verifyToken, deleteUser);
 router.post('/update-settings', verifyToken, updateSettings);
 router.post('/update-system-logo', verifyToken, settingsUpload.single('logo'), updateSystemLogo);
 router.post('/update-system-cover', verifyToken, settingsUpload.single('cover'), updateSystemCover);
+router.post('/scan-document', verifyToken, documentUpload.single('archiveFile'), scanDocument);
+router.post('/add-project', verifyToken, uploadBannerImage.single('bannerImage'), addProject);
+router.post('/update-archive-status', verifyToken, updateArchiveStatus);
+router.post('/delete-archive', verifyToken, deleteArchive);
+router.get('/get-users-request', verifyToken, getUserRequest);
 
 module.exports = router;
