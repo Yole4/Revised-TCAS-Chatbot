@@ -1,10 +1,21 @@
 const natural = require('natural')
 const CurrentDate = require('../current date/CurrentData');
 
-const currentDate = CurrentDate();
-
 function createChatbot() {
     const classifier = new natural.BayesClassifier();
+
+    const test = new Date();
+
+    const options = {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: true,
+    };
+
+    const formattedDate = test.toLocaleString('en-US', options);
 
     // Training data as an array of objects
     const trainingData = [
@@ -67,7 +78,7 @@ function createChatbot() {
             case 'greeting':
                 return 'Hello! How can I assist you today?';
             case 'time':
-                return `The current date time is ${currentDate}.`;
+                return `The current date time is ${formattedDate}.`;
             case 'joke':
                 return "How do you know you're in love with a programmer? When they make your heart race, even without semicolons.!";
             case 'help':

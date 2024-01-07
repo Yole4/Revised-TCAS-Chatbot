@@ -8,12 +8,9 @@ import { ChatbotContext } from '../../../Context/ChatbotContext';
 function Chatbot() {
     const navigate = useNavigate();
 
-    const {isChatbot, setIsChatbot, messages, setMessages, userInput, setUserInput, disableChat, setDisableChat, handleChat} = useContext(ChatbotContext);
+    const { isChatbot, setIsChatbot, userInput, setUserInput, disableChat, handleChat, userMessages, loadingInputMessage } = useContext(ChatbotContext);
 
-    const {userCredentials} = useContext(AuthContext);
-
-    // loading
-    const [isLoading, setIsLoading] = useState(false);
+    const { userCredentials, isLoading } = useContext(AuthContext);
 
     const chatRef = useRef(null);
 
@@ -22,7 +19,8 @@ function Chatbot() {
         if (chatRef.current) {
             chatRef.current.scrollTop = chatRef.current.scrollHeight;
         }
-    }, [messages]);
+    }, [userMessages, isChatbot, isLoading]);
+
 
     return (
         <>
@@ -31,7 +29,7 @@ function Chatbot() {
                     {isChatbot ? (
                         <span className="material-symbols-outlined">close</span>
                     ) : (
-                        <span className="material-symbols-outlined">mode_comment</span>
+                        <span className="material-symbols-outlined" >mode_comment</span>
                     )}
                 </button>
                 {isChatbot && (
@@ -45,12 +43,18 @@ function Chatbot() {
                                 <span className="material-symbols-outlined">smart_toy</span>
                                 <p>Hi {userCredentials && userCredentials.fullname} 👋 How can I help you today?</p>
                             </li>
-                            {messages && messages.map(item => (
+                            {userMessages && userMessages.map(item => (
                                 <>
-                                    <li className='chat outgoing' key={item.id}><p>{item.userMessage}</p></li>
-                                    <li className='chat incoming' key={item.id}><span className="material-symbols-outlined">smart_toy</span><p>{item.botMessage}</p></li>
+                                    <li className='chat outgoing' key={item.id}><p>{item.user_message}</p></li>
+                                    <li className='chat incoming' key={item.id}><span className="material-symbols-outlined">smart_toy</span><p>{item.response}</p></li>
                                 </>
                             ))}
+                            {isLoading && (
+                                <>
+                                    <li className='chat outgoing'><p>{loadingInputMessage}</p></li>
+                                    <li className='chat incoming'><span className="material-symbols-outlined">smart_toy</span><p>...</p></li>
+                                </>
+                            )}
                         </ul>
                         <div className="chat-input">
                             <form onSubmit={handleChat}>
@@ -62,14 +66,6 @@ function Chatbot() {
                                 )}
                             </form>
                         </div>
-
-                        {isLoading && (
-                            <div className="chatbot-container">
-                                <div className="modal-pop-up-chatbot-loading">
-                                    <div className="modal-pop-up-loading-spiner"></div>
-                                </div>
-                            </div>
-                        )}
                     </div>
                 )}
             </div>

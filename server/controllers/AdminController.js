@@ -9,10 +9,18 @@ require('dotenv').config();
 const { sanitizeAndValidate, sanitizeAndValidateArray } = require('../components/validator and sanitizer/ValidatorAndSanitizer');
 const { processFile } = require('../components/scan document/ScanDocument');
 
-// add new archive file
-const addNewArchiveFile = async (req, res) => {
+const test = new Date();
 
-}
+const options = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: true,
+};
+
+const currentDate = test.toLocaleString('en-US', options);
 
 // fetch department
 const fetchDepartment = async (req, res) => {
@@ -51,14 +59,14 @@ const addDepartment = async (req, res) => {
                     res.status(401).json({ message: `${sanitizeName} Already Exist!` });
                 } else {
                     // insert new department
-                    const insertNew = `INSERT INTO department (name, description, status) VALUES (?,?,?)`;
-                    db.query(insertNew, [sanitizeName, addDepartmentData.description, sanitizeStatus], (error, results) => {
+                    const insertNew = `INSERT INTO department (name, description, status, date) VALUES (?,?,?,?)`;
+                    db.query(insertNew, [sanitizeName, addDepartmentData.description, sanitizeStatus, currentDate], (error, results) => {
                         if (error) {
                             res.status(401).json({ message: "Server side error!" });
                         } else {
                             // insert notification
-                            const insertNot = `INSERT INTO notifications (user_id, notification_type, content) VALUES (?,?,?)`;
-                            db.query(insertNot, [sanitizeUserId, "Department", `You have been successfully added ${sanitizeName} on Department List.`], (error, results) => {
+                            const insertNot = `INSERT INTO notifications (user_id, notification_type, content, date) VALUES (?,?,?,?)`;
+                            db.query(insertNot, [sanitizeUserId, "Department", `You have been successfully added ${sanitizeName} on Department List.`, currentDate], (error, results) => {
                                 if (error) {
                                     res.status(401).json({ message: "Server side error!" });
                                 } else {
@@ -105,8 +113,8 @@ const editDepartment = async (req, res) => {
                             res.status(401).json({ message: "Server side error!" });
                         } else {
                             // insert notification
-                            const insertNot = `INSERT INTO notifications (user_id, notification_type, content) VALUES (?,?,?)`;
-                            db.query(insertNot, [sanitizeUserId, "Department", `${sanitizeName} was been updated!`], (error, results) => {
+                            const insertNot = `INSERT INTO notifications (user_id, notification_type, content, date) VALUES (?,?,?,?)`;
+                            db.query(insertNot, [sanitizeUserId, "Department", `${sanitizeName} was been updated!`, currentDate], (error, results) => {
                                 if (error) {
                                     res.status(401).json({ message: "Server side error!" });
                                 } else {
@@ -143,8 +151,8 @@ const deleteDepartment = async (req, res) => {
                 res.status(401).json({ message: "Server side error!" });
             } else {
                 // insert notiifcation
-                const insertNot = `INSERT INTO notifications (user_id, notification_type, content) VALUES (?,?,?)`;
-                db.query(insertNot, [sanitizeUserId, "Department", `You have been successfully deleted ${sanitizeName}`], (error, results) => {
+                const insertNot = `INSERT INTO notifications (user_id, notification_type, content, date) VALUES (?,?,?,?)`;
+                db.query(insertNot, [sanitizeUserId, "Department", `You have been successfully deleted ${sanitizeName}`, currentDate], (error, results) => {
                     if (error) {
                         res.status(401).json({ message: "Server side error!" });
                     } else {
@@ -194,14 +202,14 @@ const addCourse = async (req, res) => {
                     res.status(401).json({ message: `${sanitizeCourse} already exist!` });
                 } else {
                     // insert new course
-                    const insertNewCourse = `INSERT INTO courses (course, status, acronym) VALUES (?,?,?)`;
-                    db.query(insertNewCourse, [sanitizeCourse, sanitizeStatus, sanitizeAcro], (error, results) => {
+                    const insertNewCourse = `INSERT INTO courses (course, status, acronym, date) VALUES (?,?,?,?)`;
+                    db.query(insertNewCourse, [sanitizeCourse, sanitizeStatus, sanitizeAcro, currentDate], (error, results) => {
                         if (error) {
                             res.status(401).json({ message: "Server side error!" });
                         } else {
                             // insert notification
-                            const insertNot = `INSERT INTO notifications (user_id, notification_type, content) VALUES (?,?,?)`;
-                            db.query(insertNot, [sanitizeUserId, "Course", `You have been successfully added ${sanitizeCourse} from the course list.`], (error, results) => {
+                            const insertNot = `INSERT INTO notifications (user_id, notification_type, content, date) VALUES (?,?,?,?)`;
+                            db.query(insertNot, [sanitizeUserId, "Course", `You have been successfully added ${sanitizeCourse} from the course list.`, currentDate], (error, results) => {
                                 if (error) {
                                     res.status(401).json({ message: "Server side error!" });
                                 } else {
@@ -249,8 +257,8 @@ const editCourse = async (req, res) => {
                             res.status(401).json({ message: "Server side error!" });
                         } else {
                             // insert notification
-                            const insertNot = `INSERT INTO notifications (user_id, notification_type, content) VALUES (?,?,?)`;
-                            db.query(insertNot, [sanitizeUserId, "Course", `${sanitizeCourse} has been successfully updated!`], (error, results) => {
+                            const insertNot = `INSERT INTO notifications (user_id, notification_type, content, date) VALUES (?,?,?,?)`;
+                            db.query(insertNot, [sanitizeUserId, "Course", `${sanitizeCourse} has been successfully updated!`, currentDate], (error, results) => {
                                 if (error) {
                                     res.status(401).json({ message: "Server side error!" });
                                 } else {
@@ -287,8 +295,8 @@ const deleteCourse = async (req, res) => {
                 res.status(401).json({ message: "Server side error!" });
             } else {
                 // insert notification
-                const insertNot = `INSERT INTO notifications (user_id, notification_type, content) VALUES (?,?,?)`;
-                db.query(insertNot, [sanitizeUserId, "Course", `You have been successfully deleted ${sanitizeCourse}`], (error, results) => {
+                const insertNot = `INSERT INTO notifications (user_id, notification_type, content, date) VALUES (?,?,?,?)`;
+                db.query(insertNot, [sanitizeUserId, "Course", `You have been successfully deleted ${sanitizeCourse}`, currentDate], (error, results) => {
                     if (error) {
                         res.status(401).json({ message: "Server side error!" });
                     } else {
@@ -337,14 +345,14 @@ const addSY = async (req, res) => {
                     res.status(401).json({ message: `${sanitizeSY} already exist!` });
                 } else {
                     // insert new s.y.
-                    const insertSY = `INSERT INTO school_year (school_year, status) VALUES (?,?)`;
-                    db.query(insertSY, [sanitizeSY, sanitizeStatus], (error, results) => {
+                    const insertSY = `INSERT INTO school_year (school_year, status, date) VALUES (?,?,?)`;
+                    db.query(insertSY, [sanitizeSY, sanitizeStatus, currentDate], (error, results) => {
                         if (error) {
                             res.status(401).json({ message: "Server side error!" });
                         } else {
                             // insert notification
-                            const insertNot = `INSERT INTO notifications (user_id, notification_type, content) VALUES (?,?,?)`;
-                            db.query(insertNot, [sanitizeUserId, "School Year", `You've been successfully added ${sanitizeSY}`], (error, results) => {
+                            const insertNot = `INSERT INTO notifications (user_id, notification_type, content, date) VALUES (?,?,?,?)`;
+                            db.query(insertNot, [sanitizeUserId, "School Year", `You've been successfully added ${sanitizeSY}`, currentDate], (error, results) => {
                                 if (error) {
                                     res.status(401).json({ messagte: "Server side error!" });
                                 } else {
@@ -421,8 +429,8 @@ const deleteSY = async (req, res) => {
                 res.status(401).json({ message: "Server side error!" });
             } else {
                 // insert notification
-                const insertNot = `INSERT INTO notifications (user_id, notification_type, content) VALUES (?,?,?)`;
-                db.query(insertNot, [sanitizeUserId, "School Year", `You've successfully deleted ${sanitizeSY}`], (error, results) => {
+                const insertNot = `INSERT INTO notifications (user_id, notification_type, content, date) VALUES (?,?,?,?)`;
+                db.query(insertNot, [sanitizeUserId, "School Year", `You've successfully deleted ${sanitizeSY}`, currentDate], (error, results) => {
                     if (error) {
                         res.status(401).json({ message: "Server side error!" });
                     } else {
@@ -468,8 +476,8 @@ const deleteUser = async (req, res) => {
                 res.status(401).json({ message: "Server side error!" });
             } else {
                 // insert notiification
-                const insertNot = `INSERT INTO notifications (user_id, notification_type, content) VALUES (?,?,?)`;
-                db.query(insertNot, [sanitizeUserId, "Users", `You've been successfully deleted ${sanitizeEmail} account.`], (error, results) => {
+                const insertNot = `INSERT INTO notifications (user_id, notification_type, content, date) VALUES (?,?,?,?)`;
+                db.query(insertNot, [sanitizeUserId, "Users", `You've been successfully deleted ${sanitizeEmail} account.`, currentDate], (error, results) => {
                     if (error) {
                         res.status(401).json({ message: "Server side error!" });
                     } else {
@@ -720,14 +728,14 @@ const addProject = async (req, res) => {
                         return res.status(401).send({ message: "Invalid File Name!" });
                     }
                     else {
-                        const insertNew = `INSERT INTO archive_files (abstract, page_number, file_path, department, course, school_year, project_title, members, image_banner) VALUES (?,?,?,?,?,?,?,?,?)`;
-                        db.query(insertNew, [submitFoundAbstract, submitPageNumber, submitFileName, submitDepartment, submitCourse, submitSchoolYear, submitProjectTitle, submitMembers, uniqueFilePath], (error, results) => {
+                        const insertNew = `INSERT INTO archive_files (abstract, page_number, file_path, department, course, school_year, project_title, members, image_banner, date) VALUES (?,?,?,?,?,?,?,?,?,?)`;
+                        db.query(insertNew, [submitFoundAbstract, submitPageNumber, submitFileName, submitDepartment, submitCourse, submitSchoolYear, submitProjectTitle, submitMembers, uniqueFilePath, currentDate], (error, results) => {
                             if (error) {
                                 res.status(401).json({ message: "Server side error!" });
                             } else {
                                 // insert notification
-                                const insertNotification = `INSERT INTO notifications (user_id, notification_type, content) VALUES (?, ? ,?)`;
-                                db.query(insertNotification, [sanitizeId, "Add Project", `You've successfully added ${submitProjectTitle} to archive`], (error, results) => {
+                                const insertNotification = `INSERT INTO notifications (user_id, notification_type, content, date) VALUES (?, ?, ? ,?)`;
+                                db.query(insertNotification, [sanitizeId, "Add Project", `You've successfully added ${submitProjectTitle} to archive`, currentDate], (error, results) => {
                                     if (error) {
                                         res.status(401).json({ message: "Server side error!" });
                                     } else {
@@ -863,14 +871,14 @@ const addRequest = async (req, res) => {
     }
     else {
         // insert to request
-        const insertRequest = `INSERT INTO user_file_request (user_request_id, project_id) VALUES (?, ?)`;
-        db.query(insertRequest, [sanitizeUserId, sanitizeArchiveId], (error, results) => {
+        const insertRequest = `INSERT INTO user_file_request (user_request_id, project_id, date) VALUES (?, ?, ?)`;
+        db.query(insertRequest, [sanitizeUserId, sanitizeArchiveId, currentDate], (error, results) => {
             if (error) {
                 res.status(401).json({ message: "Server side error!" });
             } else {
                 // insert notification
-                const insertNotification = `INSERT INTO notifications (user_id, notification_type, content) VALUES (?, ?, ?)`;
-                db.query(insertNotification, ["1", "Request Document", `${sanitizeFullName} requested to view the document of ${sanitizeProjectTitle}`], (error, results) => {
+                const insertNotification = `INSERT INTO notifications (user_id, notification_type, content, date) VALUES (?, ?, ?, ?)`;
+                db.query(insertNotification, ["1", "Request Document", `${sanitizeFullName} requested to view the document of ${sanitizeProjectTitle}`,currentDate], (error, results) => {
                     if (error) {
                         res.status(401).json({ message: "Server side error!" });
                     } else {
@@ -917,14 +925,14 @@ const requestResponse = async (req, res) => {
                     userContent = `Your request on ${sanitizeProjectTitle} was been Disapproved by Admin`;
                     successMessage = `${sanitizeProjectTitle} has been successfully set to Pending`;
                 }
-                const insertNotification = `INSERT INTO notifications (user_id, notification_type, content) VALUES (?, ?, ?)`;
-                db.query(insertNotification, [sanitizeUserId, "Request Document", admiNContent], (error, results) => {
+                const insertNotification = `INSERT INTO notifications (user_id, notification_type, content, date) VALUES (?, ?, ?, ?)`;
+                db.query(insertNotification, [sanitizeUserId, "Request Document", admiNContent, currentDate], (error, results) => {
                     if (error) {
                         res.status(401).json({ message: "Server side error!" });
                     } else {
                         // insert notification for the user
-                        const insertNotUser = `INSERT INTO notifications (user_id, notification_type, content) VALUES (?, ?, ?)`;
-                        db.query(insertNotUser, [sanitizeUserRequestId, "User Request", userContent], (error, results) => {
+                        const insertNotUser = `INSERT INTO notifications (user_id, notification_type, content, date) VALUES (?, ?, ?, ?)`;
+                        db.query(insertNotUser, [sanitizeUserRequestId, "User Request", userContent, currentDate], (error, results) => {
                             if (error) {
                                 res.status(401).json({ message: "Server side error!" });
                             } else {
@@ -940,6 +948,6 @@ const requestResponse = async (req, res) => {
 }
 
 module.exports = {
-    addNewArchiveFile, fetchDepartment, addDepartment, editDepartment, deleteDepartment, fetchCourse, addCourse, editCourse, deleteCourse, fetchSchoolYear, addSY, editSY, deleteSY,
+    fetchDepartment, addDepartment, editDepartment, deleteDepartment, fetchCourse, addCourse, editCourse, deleteCourse, fetchSchoolYear, addSY, editSY, deleteSY,
     fetchUsers, deleteUser, updateSettings, updateSystemCover, updateSystemLogo, scanDocument, addProject, updateArchiveStatus, deleteArchive, getUserRequest, getRequestId, addRequest, requestResponse
 };

@@ -17,6 +17,19 @@ const createToken = (id, email, fullname, userType, image) => {
     return token;
 };
 
+const test = new Date();
+
+const options = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: true,
+};
+
+const currentDate = test.toLocaleString('en-US', options);
+
 // initailize GOOGLE_CLIENT_ID
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
@@ -60,8 +73,8 @@ const registerUser = async (req, res) => {
                         return res.status(401).json({ message: "Invalid File Name!" });
                     } else {
                         try {
-                            const findUsername = `SELECT * FROM users WHERE email = ?`;
-                            db.query(findUsername, [registerData.email], (error, results) => {
+                            const findUsername = `SELECT * FROM users WHERE email = ? AND isDelete = ?`;
+                            db.query(findUsername, [registerData.email, "not"], (error, results) => {
                                 if (error) {
                                     res.status(401).json({ message: "Server side error!" });
                                 } else {
@@ -72,8 +85,8 @@ const registerUser = async (req, res) => {
                                             if (registerData.password.length >= 7) {
                                                 // register user
                                                 const hashedPassword = crypto.createHash('sha256').update(registerData.password).digest('hex');
-                                                const registerUser = `INSERT INTO users (email, fullname, password, user_type, image) VALUES (?,?,?,?,?)`;
-                                                db.query(registerUser, [registerData.email, registerData.fullname, hashedPassword, "Researcher", uniqueFilePath], (error, results) => {
+                                                const registerUser = `INSERT INTO users (email, fullname, password, user_type, image, date) VALUES (?,?,?,?,?,?)`;
+                                                db.query(registerUser, [registerData.email, registerData.fullname, hashedPassword, "Researcher", uniqueFilePath, currentDate], (error, results) => {
                                                     if (error) {
                                                         res.status(401).json({ message: "Server side error!" });
                                                     } else {
@@ -117,8 +130,8 @@ const loginUser = async (req, res) => {
             res.status(401).json({ message: "Invalid Input!" });
         } else {
             // select email
-            const checkEmail = `SELECT * FROM users WHERE email = ?`;
-            db.query(checkEmail, [loginInfo.email], (error, results) => {
+            const checkEmail = `SELECT * FROM users WHERE email = ? AND isDelete = ?`;
+            db.query(checkEmail, [loginInfo.email, "not"], (error, results) => {
                 if (error) {
                     res.status(401).json({ message: "Server side error!" });
                 } else {
@@ -175,8 +188,8 @@ const loginGoogle = async (req, res) => {
         };
 
         // login here
-        const isGoogleIdExist = `SELECT * FROM users WHERE google_id = ?`;
-        db.query(isGoogleIdExist, [user.googleId], (error, results) => {
+        const isGoogleIdExist = `SELECT * FROM users WHERE google_id = ? AND isDelete = ?`;
+        db.query(isGoogleIdExist, [user.googleId, "not"], (error, results) => {
             if (error) {
                 res.status(401).json({ message: "Server side error!" });
             } else {
@@ -225,8 +238,8 @@ const registerGoogle = async (req, res) => {
         };
 
         // register here
-        const isGoogleIdExist = `SELECT * FROM users WHERE google_id = ?`;
-        db.query(isGoogleIdExist, [user.googleId], (error, results) => {
+        const isGoogleIdExist = `SELECT * FROM users WHERE google_id = ? AND isDelete = ?`;
+        db.query(isGoogleIdExist, [user.googleId, "not"], (error, results) => {
             if (error) {
                 res.status(401).json({ message: "Server side error!" });
             } else {
@@ -234,8 +247,8 @@ const registerGoogle = async (req, res) => {
                     res.status(401).json({ message: "Email Already Registered!" });
                 } else {
                     // register
-                    const insertNewEmail = `INSERT INTO users (google_id, email, fullname, image, user_type) VALUES (?,?,?,?,?)`;
-                    db.query(insertNewEmail, [user.googleId, user.email, user.name, user.picture, "Researcher"], (error, results) => {
+                    const insertNewEmail = `INSERT INTO users (google_id, email, fullname, image, user_type, date) VALUES (?,?,?,?,?,?)`;
+                    db.query(insertNewEmail, [user.googleId, user.email, user.name, user.picture, "Researcher", currentDate], (error, results) => {
                         if (error) {
                             res.status(401).json({ message: "Server side error!" });
                         } else {

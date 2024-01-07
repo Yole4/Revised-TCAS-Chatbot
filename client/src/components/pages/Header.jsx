@@ -22,8 +22,8 @@ function Header() {
         isEditProfile, setIsEditProfile, handleChangeProfile, changeProfileInfo, setChangeProfileInfo, notificationList
     } = useContext(AuthContext);
 
-    const {publicLoading, settingsData} = useContext(PublicContext);
-    const {departmentToSearch, courseList} = useContext(AdminContext);
+    const { publicLoading, settingsData } = useContext(PublicContext);
+    const { departmentToSearch, courseList } = useContext(AdminContext);
 
     const location = useLocation();
     const navigate = useNavigate();
@@ -40,6 +40,14 @@ function Header() {
             }, 5000);
         }
     }, [errorResponse]);
+
+    const [searchValue, setSearchValue] = useState('');
+
+    const handleSearch = async (e) => {
+        e.preventDefault();
+
+        window.location.href = `/projects?q=${searchValue}`;
+    }
 
     return (
         <>
@@ -155,7 +163,7 @@ function Header() {
                                         item.status === "Active" && (
                                             <>
                                                 <li key={item.id}>
-                                                    <a href="" className="dropdown-item">{item.name}</a>
+                                                    <a href={`/projects?qd=${item.name}`} className="dropdown-item">{item.name}</a>
                                                 </li>
                                                 <li className="dropdown-divider" />
                                             </>
@@ -170,7 +178,7 @@ function Header() {
                                         item.status === "Active" && (
                                             <>
                                                 <li key={item.id}>
-                                                    <a href={`/view-project/${1000 + item.project_id}`} className="dropdown-item">{item.course}</a>
+                                                    <a href={`/projects?qc=${item.course}`} className="dropdown-item">{item.course}</a>
                                                     {/* <a href={`/view-project/${1000 + item.project_id}`} className="dropdown-item">{item.course}</a> */}
                                                 </li>
                                                 <li className="dropdown-divider" />
@@ -194,7 +202,9 @@ function Header() {
                     {/* Right navbar links */}
                     <div className="order-1 order-md-3 navbar-nav navbar-no-expand ml-auto">
                         <ImSearch size={20} className='search-bar' onClick={(e) => { e.stopPropagation(); setOnSearch(onSearch ? false : true) }} />
-                        <input onClick={(e) => e.stopPropagation()} placeholder='Search...' className='search-input' type="text" style={{ display: onSearch ? 'block' : 'none' }} />
+                        <form onSubmit={handleSearch}>
+                            <input onClick={(e) => e.stopPropagation()} placeholder='Search...' value={searchValue} onChange={(e) => setSearchValue(e.target.value)} className='search-input' type="text" style={{ display: onSearch ? 'block' : 'none' }} />
+                        </form>
                         {/* <IoMenuSharp onClick={(e) => { e.stopPropagation() }} className="menu-bar" size={30} /> */}
                     </div>
                 </div>

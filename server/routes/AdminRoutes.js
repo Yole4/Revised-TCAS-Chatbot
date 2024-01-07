@@ -2,7 +2,7 @@ const express = require('express');
 const {verifyToken} = require('../auth/Authentication');
 const multer = require('multer');
 
-const { addNewArchiveFile, fetchDepartment, addDepartment, editDepartment, deleteDepartment, fetchCourse, editCourse, deleteCourse, addCourse, fetchSchoolYear, addSY, editSY, deleteSY, fetchUsers, deleteUser, updateSettings, updateSystemLogo, updateSystemCover, scanDocument, addProject, updateArchiveStatus, deleteArchive, getUserRequest, getRequestId, addRequest, requestResponse } = require('../controllers/AdminController');
+const { fetchDepartment, addDepartment, editDepartment, deleteDepartment, fetchCourse, editCourse, deleteCourse, addCourse, fetchSchoolYear, addSY, editSY, deleteSY, fetchUsers, deleteUser, updateSettings, updateSystemLogo, updateSystemCover, scanDocument, addProject, updateArchiveStatus, deleteArchive, getUserRequest, getRequestId, addRequest, requestResponse } = require('../controllers/AdminController');
 
 const router = express.Router();
 
@@ -18,7 +18,6 @@ const uploadBannerImage = multer({
     dest: 'assets/banner image/',
 });
 
-router.post('/add-new-archive', verifyToken, addNewArchiveFile);
 router.get('/fetch-department', verifyToken, fetchDepartment);
 router.post('/add-department', verifyToken, addDepartment);
 router.post('/edit-department', verifyToken, editDepartment);

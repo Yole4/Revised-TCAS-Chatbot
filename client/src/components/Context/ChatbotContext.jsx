@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { AuthContext } from "./AuthContext";
 import { apostRequest, backendUrl } from "../../utils/Services";
 
@@ -9,43 +9,76 @@ export const ChatbotContextProvider = ({ children }) => {
 
     const { userCredentials, isLoading, setIsLoading, userId } = useContext(AuthContext);
 
-    const [isChatbot, setIsChatbot] = useState(false);
-    const [messages, setMessages] = useState([]);
+    // ################################################################ CHATBOT REQUEST MESSAGE ######################################################################
+    const [isChatbot, setIsChatbot] = useState(true);
+    const [messages, setMessages] = useState({
+        userMessage: [],
+        botMessage: []
+    });
+    // const [messages, setMessages] = useState([]);
     const [userInput, setUserInput] = useState('');
+    const [chatbotMount, setChatbotMount] = useState(false);
+    const [loadingInputMessage, setLoadingInputMessage] = useState('');
 
     const [disableChat, setDisableChat] = useState(false);
 
     const handleChat = async (e) => {
         e.preventDefault();
+        setIsLoading(true);
 
         if (userInput && !disableChat) {
             setDisableChat(true);
-            setMessages([...messages, { userMessage: userInput, botMessage: "..." }]);
+            setLoadingInputMessage(userInput);
             setUserInput('');
 
             try {
-                const response = await apostRequest(`${backendUrl}/api/chatbot/chat-request`, { userInput });
+                const response = await apostRequest(`${backendUrl}/api/chatbot/chat-request`, { userInput, userId: userId.toString() });
+                setIsLoading(false);
+                setDisableChat(false);
 
                 if (response.error) {
-                    setTimeout(() => {
-                        setDisableChat(false);
-                        setMessages([...messages, { botMessage: response.message, userMessage: userInput }]);
-                    }, 1000);
+                    console.log(response.message);
                 }else{
-                    setTimeout(() => {
-                        setDisableChat(false);
-                        setMessages([...messages, { botMessage: response.message, userMessage: userInput }]);
-                    }, 1000);
+                    setChatbotMount(chatbotMount ? false : true);
                 }
             } catch (error) {
                 setDisableChat(false);
                 console.log(error);
-                setMessages([...messages, { userMessage: userInput, botMessage: "Something went wrong!" }]);
+                setIsLoading(false);
             }
         }
     };
 
+    // ###############################################  FETCH CHATBOT MESSAGES  #############################################################
+    const [userMessages, setUserMessages] = useState([]);
+
+    useEffect(() => {
+        if (userId) {
+            const getMessage = async (e) => {
+                setIsLoading(true);
+                try {
+                    const response = await apostRequest(`${backendUrl}/api/chatbot/get-chatbot-messages`, {userId: userId.toString()});
+
+                    setIsLoading(false);
+
+                    if (response.error) {
+                        console.log(response.message);
+                    }else{
+                        setUserMessages(response.message);
+                        response.message.map(item => {
+                            setMessages([...messages, { userMessage: item.user_message, botMessage: item.response }]);
+                        })
+                    }   
+                } catch (error) {
+                    console.log("Error: ",error);
+                    setIsLoading(false);
+                }
+            };
+            getMessage();
+        }
+    }, [userId, chatbotMount]);
+
     return <ChatbotContext.Provider value={{
-        isChatbot, setIsChatbot, messages, setMessages, userInput, setUserInput, disableChat, setDisableChat, handleChat
+        isChatbot, setIsChatbot, messages, setMessages, userInput, setUserInput, disableChat, setDisableChat, handleChat, userMessages, loadingInputMessage
     }}>{children}</ChatbotContext.Provider>
 }
