@@ -2,8 +2,6 @@ const natural = require('natural')
 const CurrentDate = require('../current date/CurrentData');
 
 function createChatbot() {
-    const classifier = new natural.BayesClassifier();
-
     const test = new Date();
 
     const options = {
@@ -14,8 +12,9 @@ function createChatbot() {
         minute: 'numeric',
         hour12: true,
     };
-
     const formattedDate = test.toLocaleString('en-US', options);
+
+    const classifier = new natural.BayesClassifier();
 
     // Training data as an array of objects
     const trainingData = [

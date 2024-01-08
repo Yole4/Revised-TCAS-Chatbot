@@ -92,7 +92,7 @@ function Projects() {
                                                             
                                                                 const overallMatchPercentage = Math.max(titleMatchPercentage, abstractMatchPercentage);
                                                             
-                                                                return overallMatchPercentage >= 5 && (
+                                                                return overallMatchPercentage >= 1 && (
                                                                     item.status === "Published" && (
                                                                         <div onClick={() => navigate(`/view-project/${1000 + item.id}`)} className="text-decoration-none text-dark list-group-item list-group-item-action" style={{ cursor: 'pointer' }}>
                                                                             <div className="row">
