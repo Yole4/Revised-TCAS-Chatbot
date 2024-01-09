@@ -487,4 +487,27 @@ const getNotification = async (req, res) => {
     }
 }
 
+// var transporter = nodemailer.createTransport({
+//     service: 'gmail',
+//     auth: {
+//         user: 'shelomora60@gmail.com',
+//         pass: 'kbwyyjspjdjerrno'
+//     }
+// });
+
+// var mailOptions = {
+//     from: 'shelomora60@gmail.com',
+//     to: shelomora13@gmail.com,
+//     subject: 'Your verification code!',
+//     text: body
+// };
+
+// transporter.sendMail(mailOptions, function (error, info) {
+//     if (error) {
+//         console.log(error);
+//     } else {
+//         res.status(200).json({ message: 'Account has been successfully added and was sent to email successfully!' });
+//     }
+// });
+
 module.exports = { protected, registerUser, loginUser, loginGoogle, registerGoogle, autoImageUpload, getUserCredentials, changePassword, updateProfileName, getNotification };

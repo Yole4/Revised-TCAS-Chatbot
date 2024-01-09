@@ -17,6 +17,8 @@ function Login() {
     } = useContext(AuthContext);
 
     const [login, setLogin] = useState(true);
+    const [isForgot, setIsForgot] = useState(false);
+    const [register, setRegister] = useState(false);
 
     const [fafaEye, setFafaEye] = useState(false);
     const [fafaEyes, setFafaEyes] = useState(false);
@@ -110,7 +112,10 @@ function Login() {
                             <p className="mb-1">
                             </p>
                             <div style={{ textAlign: 'center', margin: '15px', fontSize: '14px' }}>
-                                <span>Don't have an account? <a href="#" onClick={() => setLogin(false)}>Register</a></span>
+                                <span>Don't have an account? <a href="#" onClick={() => {setLogin(false); setRegister(true); setIsForgot(false)}}>Register</a></span>
+                            </div>
+                            <div style={{ textAlign: 'center', margin: '15px', fontSize: '15px' }}>
+                                <a href="#" style={{color: 'red'}} onClick={() => {setIsForgot(true); setLogin(false); setRegister(false);}}>Forgot Password?</a>
                             </div>
                         </div>
                         {/* /.login-card-body */}
@@ -118,7 +123,7 @@ function Login() {
                 )}
 
                 {/* ================================================= Register ======================================================= */}
-                {!login && (
+                {register && (
                     <div className="card" id="loginPage" style={{ padding: '0px 20px 0px 20px', overflow: 'auto', border: '2px solid #ccc' }}>
                         <div className="card-body login-card-body">
 
@@ -201,7 +206,44 @@ function Login() {
                             <p className="mb-1">
                             </p>
                             <div style={{ textAlign: 'center', margin: '15px', fontSize: '14px' }}>
-                                <span>Don't have an account? <a href="#" onClick={() => setLogin(true)}>Login</a></span>
+                                <span>Already have an account? <a href="#" onClick={() => {setLogin(true); setRegister(false); setIsForgot(false)}}>Login</a></span>
+                            </div>
+                        </div>
+                        {/* /.login-card-body */}
+                    </div>
+                )}
+
+                {isForgot && (
+                    <div className="card" id="loginPage" style={{ padding: '0px 20px 0px 20px', overflow: 'auto', border: '2px solid #ccc', marginTop: '50px' }}>
+                        <div className="card-body login-card-body">
+
+                            <div style={{ textAlign: 'center' }}>
+                            </div>
+                            <p style={{ textAlign: 'center', fontSize: 20, padding: '0px 10px 15px 0px' }}><strong>FORGOT PASSWORD</strong></p>
+
+                            <form>
+                                <div className="input-group mb-3">
+                                    <input type="email" style={{ height: '40px', paddingLeft: '15px', fontSize: '14px' }} className="form-control" value={loginInfo.email} onChange={(e) => setLoginInfo((prev) => ({ ...prev, email: e.target.value }))} placeholder="Enter email or your full name" />
+                                    <div className="input-group-append" >
+                                        <div className="input-group-text">
+                                            <span className="fas fa-user" style={{ fontSize: '14px' }} />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <button type="submit" style={{ height: '40px', fontSize: '14px' }} className="btn btn-primary btn-block">Find</button>
+                                </div>
+                            </form>
+                            {/* /.social-auth-links */}
+                            <p className="mb-1">
+                            </p>
+                            <div style={{ textAlign: 'left', margin: '15px', fontSize: '14px' }}>
+                                <a href="#" onClick={() => {setLogin(true); setRegister(false); setIsForgot(false)}}>Login</a>
+                            </div>
+
+                            <div>
+                                Account Found
                             </div>
                         </div>
                         {/* /.login-card-body */}
