@@ -68,7 +68,7 @@ function Department() {
                                                     <th>Name</th>
                                                     <th>Description</th>
                                                     <th>Status</th>
-                                                    <th>Action</th>
+                                                    <th style={{textAlign: 'center'}}>Action</th>
                                                 </tr>
                                             </thead>
                                             <tbody>

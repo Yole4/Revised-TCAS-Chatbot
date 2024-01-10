@@ -17,19 +17,6 @@ const createToken = (id, email, fullname, userType, image) => {
     return token;
 };
 
-const test = new Date();
-
-const options = {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: 'numeric',
-    hour12: true,
-};
-
-const currentDate = test.toLocaleString('en-US', options);
-
 // initailize GOOGLE_CLIENT_ID
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
@@ -44,6 +31,19 @@ const protected = async (req, res) => {
 // register user
 const registerUser = async (req, res) => {
     const registerData = req.body;
+
+    const test = new Date();
+
+    const options = {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: true,
+    };
+
+    const currentDate = test.toLocaleString('en-US', options);
 
     const validationRules = [
         { validator: validator.isLength, options: { min: 1, max: 255 } },
@@ -221,6 +221,20 @@ const loginGoogle = async (req, res) => {
 
 // register using google
 const registerGoogle = async (req, res) => {
+
+    const test = new Date();
+
+    const options = {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: true,
+    };
+
+    const currentDate = test.toLocaleString('en-US', options);
+
     try {
         const { userRegisterData } = req.body;
 

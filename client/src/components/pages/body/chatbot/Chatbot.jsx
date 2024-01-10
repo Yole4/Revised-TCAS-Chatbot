@@ -46,7 +46,7 @@ function Chatbot() {
                             {userMessages && userMessages.map(item => (
                                 <>
                                     <li className='chat outgoing' key={item.id}><p>{item.user_message}</p></li>
-                                    <li className='chat incoming' key={item.id}><span className="material-symbols-outlined">smart_toy</span><p>{item.response}</p></li>
+                                    <li className='chat incoming' key={item.id}><span className="material-symbols-outlined">smart_toy</span><p style={{paddingBottom: '30px'}}>{item.response}</p></li><p style={{marginTop: '-40px', marginLeft: '55px', fontSize: '11px', color: '#ccc'}}>{item.date}</p>
                                 </>
                             ))}
                             {isLoading && (

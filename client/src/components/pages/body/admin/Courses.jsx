@@ -68,7 +68,7 @@ function Courses() {
                                                     <th>Course</th>
                                                     <th>Acronym</th>
                                                     <th>Status</th>
-                                                    <th>Action</th>
+                                                    <th style={{textAlign: 'center'}}>Action</th>
                                                 </tr>
                                             </thead>
                                             <tbody>

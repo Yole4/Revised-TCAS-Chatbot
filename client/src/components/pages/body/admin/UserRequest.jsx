@@ -69,7 +69,7 @@ function UserRequest() {
                                                         <th>Name</th>
                                                         <th>Project Title</th>
                                                         <th>Status</th>
-                                                        <th>Action</th>
+                                                        <th style={{textAlign: 'center'}}>Action</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>

@@ -69,7 +69,7 @@ function Users() {
                                                         <th>Avatar</th>
                                                         <th>Name</th>
                                                         <th>Email</th>
-                                                        <th>Action</th>
+                                                        <th style={{textAlign: 'center'}}>Action</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>

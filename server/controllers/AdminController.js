@@ -9,19 +9,6 @@ require('dotenv').config();
 const { sanitizeAndValidate, sanitizeAndValidateArray } = require('../components/validator and sanitizer/ValidatorAndSanitizer');
 const { processFile } = require('../components/scan document/ScanDocument');
 
-const test = new Date();
-
-const options = {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: 'numeric',
-    hour12: true,
-};
-
-const currentDate = test.toLocaleString('en-US', options);
-
 // fetch department
 const fetchDepartment = async (req, res) => {
     const getDepartment = `SELECT * FROM department WHERE isDelete = ?`;
@@ -37,6 +24,19 @@ const fetchDepartment = async (req, res) => {
 // add department
 const addDepartment = async (req, res) => {
     const { addDepartmentData, userId } = req.body;
+
+    const test = new Date();
+
+    const options = {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: true,
+    };
+
+    const currentDate = test.toLocaleString('en-US', options);
 
     const validationRules = [
         { validator: validator.isLength, options: { min: 1, max: 255 } },
@@ -84,6 +84,19 @@ const addDepartment = async (req, res) => {
 // edit department
 const editDepartment = async (req, res) => {
     const { editDepartmentData, userId } = req.body;
+
+    const test = new Date();
+
+    const options = {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: true,
+    };
+
+    const currentDate = test.toLocaleString('en-US', options);
 
     const validationRules = [
         { validator: validator.isLength, options: { min: 1, max: 255 } },
@@ -133,6 +146,19 @@ const editDepartment = async (req, res) => {
 const deleteDepartment = async (req, res) => {
     const { deleteData, userId } = req.body;
 
+    const test = new Date();
+
+    const options = {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: true,
+    };
+
+    const currentDate = test.toLocaleString('en-US', options);
+
     const validationRules = [
         { validator: validator.isLength, options: { min: 1, max: 255 } },
     ];
@@ -179,6 +205,19 @@ const fetchCourse = async (req, res) => {
 // add course
 const addCourse = async (req, res) => {
     const { courseData, userId } = req.body;
+
+    const test = new Date();
+
+    const options = {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: true,
+    };
+
+    const currentDate = test.toLocaleString('en-US', options);
 
     const validationRules = [
         { validator: validator.isLength, options: { min: 1, max: 255 } },
@@ -227,6 +266,19 @@ const addCourse = async (req, res) => {
 // edit course
 const editCourse = async (req, res) => {
     const { editCourseData, userId } = req.body;
+
+    const test = new Date();
+
+    const options = {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: true,
+    };
+
+    const currentDate = test.toLocaleString('en-US', options);
 
     const validationRules = [
         { validator: validator.isLength, options: { min: 1, max: 255 } },
@@ -277,6 +329,19 @@ const editCourse = async (req, res) => {
 const deleteCourse = async (req, res) => {
     const { deleteCourseData, userId } = req.body;
 
+    const test = new Date();
+
+    const options = {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: true,
+    };
+
+    const currentDate = test.toLocaleString('en-US', options);
+
     const validationRules = [
         { validator: validator.isLength, options: { min: 1, max: 255 } },
     ];
@@ -323,6 +388,19 @@ const fetchSchoolYear = async (req, res) => {
 // add school year
 const addSY = async (req, res) => {
     const { addSYData, userId } = req.body;
+
+    const test = new Date();
+
+    const options = {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: true,
+    };
+
+    const currentDate = test.toLocaleString('en-US', options);
 
     const validationRules = [
         { validator: validator.isLength, options: { min: 1, max: 255 } },
@@ -411,6 +489,19 @@ const editSY = async (req, res) => {
 const deleteSY = async (req, res) => {
     const { deleteSYData, userId } = req.body;
 
+    const test = new Date();
+
+    const options = {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: true,
+    };
+
+    const currentDate = test.toLocaleString('en-US', options);
+
     const validationRules = [
         { validator: validator.isLength, options: { min: 1, max: 255 } },
     ];
@@ -457,6 +548,19 @@ const fetchUsers = async (req, res) => {
 // delete users
 const deleteUser = async (req, res) => {
     const { deleteUserData, userId } = req.body;
+
+    const test = new Date();
+
+    const options = {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: true,
+    };
+
+    const currentDate = test.toLocaleString('en-US', options);
 
     const validationRules = [
         { validator: validator.isLength, options: { min: 1, max: 255 } },
@@ -695,6 +799,19 @@ const scanDocument = async (req, res) => {
 const addProject = async (req, res) => {
     const { foundAbstract, pageNumber, fileName, department, course, schoolYear, projectTitle, members, userId, userType, fullname, chatbotInfo } = req.body;
 
+    const test = new Date();
+
+    const options = {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: true,
+    };
+
+    const currentDate = test.toLocaleString('en-US', options);
+
     const validationRules = [
         { validator: validator.isLength, options: { min: 1 } },
     ];
@@ -728,8 +845,8 @@ const addProject = async (req, res) => {
                         return res.status(401).send({ message: "Invalid File Name!" });
                     }
                     else {
-                        const insertNew = `INSERT INTO archive_files (abstract, page_number, file_path, department, course, school_year, project_title, members, image_banner, date, confirmation, request_name) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`;
-                        db.query(insertNew, [submitFoundAbstract, submitPageNumber, submitFileName, submitDepartment, submitCourse, submitSchoolYear, submitProjectTitle, submitMembers, uniqueFilePath, currentDate, userType === "Admin" ? 1 : 0, fullname], (error, results) => {
+                        const insertNew = `INSERT INTO archive_files (abstract, page_number, file_path, department, course, school_year, project_title, members, image_banner, date, confirmation, request_name, user_id) VALUES (?,?,?,?,?,?,?,?,?,?,?,?, ?)`;
+                        db.query(insertNew, [submitFoundAbstract, submitPageNumber, submitFileName, submitDepartment, submitCourse, submitSchoolYear, submitProjectTitle, submitMembers, uniqueFilePath, currentDate, userType === "Admin" ? 1 : 0, fullname, sanitizeId], (error, results) => {
                             if (error) {
                                 res.status(401).json({ message: "Server side error!" });
                             } else {
@@ -737,8 +854,8 @@ const addProject = async (req, res) => {
 
                                 const insertChatbotInformation = chatbotInfo.map(item => {
                                     return new Promise((resolve, reject) => {
-                                        const insertQuery = 'INSERT INTO chatbot_keywords (keyword, information, date) VALUES (?, ?, ?)';
-                                        db.query(insertQuery, [item.keywords, item.information, currentDate], (error, results) => {
+                                        const insertQuery = 'INSERT INTO chatbot_keywords (keyword, information, date, project_id, status) VALUES (?, ?, ?, ?, ?)';
+                                        db.query(insertQuery, [item.keywords, item.information, currentDate, documentId, userType === "Admin" ? 1 : 0], (error, results) => {
                                             if (error) {
                                                 reject(error);
                                             } else {
@@ -751,7 +868,7 @@ const addProject = async (req, res) => {
                                 Promise.all(insertChatbotInformation).then(() => {
                                     // insert notification
                                     const insertNotification = `INSERT INTO notifications (user_id, notification_type, content, date) VALUES (?, ?, ? ,?)`;
-                                    db.query(insertNotification, [sanitizeId, "Add Project", `You've successfully added ${submitProjectTitle} to archive`, currentDate], (error, results) => {
+                                    db.query(insertNotification, [sanitizeId, "Add Project", userType === "Admin" ? `You've successfully added ${submitProjectTitle} to archive` : `${submitProjectTitle} status pending`, currentDate], (error, results) => {
                                         if (error) {
                                             res.status(401).json({ message: "Server side error!" });
                                         } else {
@@ -889,6 +1006,19 @@ const getRequestId = async (req, res) => {
 const addRequest = async (req, res) => {
     const { archiveId, userId, fullname, projectTitle } = req.body;
 
+    const test = new Date();
+
+    const options = {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: true,
+    };
+
+    const currentDate = test.toLocaleString('en-US', options);
+
     const validationRules = [
         { validator: validator.isLength, options: { min: 1 } },
     ];
@@ -925,6 +1055,19 @@ const addRequest = async (req, res) => {
 // request response
 const requestResponse = async (req, res) => {
     const { userId, acceptId, userRequestId, currentStatus, fullname, projectTitle } = req.body;
+
+    const test = new Date();
+
+    const options = {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: true,
+    };
+
+    const currentDate = test.toLocaleString('en-US', options);
 
     const validationRules = [
         { validator: validator.isLength, options: { min: 1 } },
@@ -981,14 +1124,43 @@ const requestResponse = async (req, res) => {
 
 // accept document 
 const acceptDocument = async (req, res) => {
-    const { acceptId, projectTitle } = req.body;
+    const { acceptId, projectTitle, userUploadId } = req.body;
+
+    const test = new Date();
+
+    const options = {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: true,
+    };
+
+    const currentDate = test.toLocaleString('en-US', options);
 
     const handleAccept = `UPDATE archive_files SET confirmation = ? WHERE id = ?`;
     db.query(handleAccept, [1, acceptId], (error, results) => {
         if (error) {
             res.status(401).json({ message: "Server side error!" });
         } else {
-            res.status(200).json({ message: `${projectTitle} Accepted!` });
+            // accept chatbot keywords
+            const acceptChatbot = `UPDATE chatbot_keywords SET status = ? WHERE project_id = ?`;
+            db.query(acceptChatbot, [1, acceptId], (error, results) => {
+                if (error) {
+                    res.status(401).json({ message: "Server side error!" });
+                } else {
+                    // insert to user notification
+                    const userNot = `INSERT INTO notifications (user_id, notification_type, content, date) VALUES (?,?,?,?)`;
+                    db.query(userNot, [userUploadId, "Accept Request", `Your Request on ${projectTitle} has been approved by admin!`, currentDate], (error, results) => {
+                        if (error) {
+                            res.status(401).json({message: "Server side error!"});
+                        }else{
+                            res.status(200).json({ message: `${projectTitle} Accepted!` });
+                        }
+                    })
+                }
+            })
         }
     })
 }

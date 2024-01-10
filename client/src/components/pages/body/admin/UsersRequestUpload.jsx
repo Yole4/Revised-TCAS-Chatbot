@@ -57,17 +57,15 @@ function UsersRequestUpload() {
                                         <div style={{ maxHeight: '70vh', overflow: 'auto' }}>
                                             <table className="table table-hover table-striped">
                                                 <colgroup>
-                                                    <col width="3%" />
                                                     <col width="30%" />
                                                     <col width="50%" />
-                                                    <col width="17%" />
+                                                    <col width="20%" />
                                                 </colgroup>
                                                 <thead>
                                                     <tr>
-                                                        <th>#</th>
                                                         <th>Users Name</th>
                                                         <th>Project Title</th>
-                                                        <th>Action</th>
+                                                        <th style={{textAlign: 'center'}}>Action</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -79,7 +77,6 @@ function UsersRequestUpload() {
                                                         archiveFiles.map((item, index) => (
                                                             item.confirmation === 0 && (
                                                                 <tr>
-                                                                    <td className="text-center">{index + 1}</td>
                                                                     <td><p className="m-0 truncate-1">{item.request_name}</p></td>
                                                                     <td><p className="m-0 truncate-1">{item.project_title}</p></td>
                                                                     <td align="center">

@@ -3,8 +3,8 @@ const db = require('../../database/Connection');
 
 function chatbotData() {
     return new Promise((resolve, reject) => {
-        const fetchData = `SELECT * FROM chatbot_keywords WHERE isDelete = ?`;
-        db.query(fetchData, ["not"], (error, results) => {
+        const fetchData = `SELECT * FROM chatbot_keywords WHERE isDelete = ? AND status = ?`;
+        db.query(fetchData, ["not", 1], (error, results) => {
             if (error) {
                 console.log(error);
                 reject(error);

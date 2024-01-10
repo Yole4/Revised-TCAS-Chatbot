@@ -341,6 +341,7 @@ export const AuthContextProvider = ({ children }) => {
 
     // ####################################################################      GET NOTIFICATIONS      ######################################################################################
     const [notificationList, setNotificationList] = useState([]);
+    const [notificationMount, setNotificationMount] = useState(false);
 
     useEffect(() => {
         if (userId) {
@@ -364,7 +365,7 @@ export const AuthContextProvider = ({ children }) => {
             };
             fetchNot();
         }
-    }, [userId]);
+    }, [userId, notificationMount]);
 
 
     return <AuthContext.Provider value={{
@@ -408,6 +409,6 @@ export const AuthContextProvider = ({ children }) => {
         changeProfileInfo,
         setChangeProfileInfo,
         userId,
-        notificationList
+        notificationList, notificationMount, setNotificationMount
     }}> {children} </AuthContext.Provider>
 }

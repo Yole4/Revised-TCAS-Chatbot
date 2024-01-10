@@ -62,7 +62,7 @@ function Archive() {
                                                         <th>Project Title</th>
                                                         <th>Course</th>
                                                         <th>Status</th>
-                                                        <th>Action</th>
+                                                        <th style={{textAlign: 'center'}}>Action</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>

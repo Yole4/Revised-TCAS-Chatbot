@@ -7,7 +7,7 @@ export const AdminContext = createContext();
 
 export const AdminContextProvider = ({ children }) => {
 
-    const { userId, userCredentials, errorResponse, setErrorResponse, isLoading, setIsLoading, mount, setMount } = useContext(AuthContext);
+    const { userId, userCredentials, errorResponse, setErrorResponse, isLoading, setIsLoading, mount, setMount, notificationMount, setNotificationMount } = useContext(AuthContext);
 
     // #####################################################################    FETCH DEPARTMENT  ####################################################################
     const [departmentMount, setDepartmentMount] = useState(false);
@@ -68,6 +68,7 @@ export const AdminContextProvider = ({ children }) => {
                 setErrorResponse({ message: response.message, isError: false });
                 setIsAddDepartment(false);
                 setDepartmentMount(departmentMount ? false : true);
+                setNotificationMount(notificationMount ? false : true);
             }
         } catch (error) {
             setIsLoading(false);
@@ -192,6 +193,7 @@ export const AdminContextProvider = ({ children }) => {
                 setErrorResponse({ message: response.message, isError: false });
                 setIsAddCourse(false);
                 setCourseMount(courseMount ? false : true);
+                setNotificationMount(notificationMount ? false : true);
             }
         } catch (error) {
             console.log("Error: ", error);
@@ -316,6 +318,7 @@ export const AdminContextProvider = ({ children }) => {
                 setErrorResponse({ message: response.message, isError: false });
                 setIsAddSY(false);
                 setSYMount(syMount ? false : true);
+                setNotificationMount(notificationMount ? false : true);
             }
         } catch (error) {
             console.log("Error: ", error);
@@ -671,6 +674,7 @@ export const AdminContextProvider = ({ children }) => {
                     setFormData([{ keywords: '', information: '' }]);
                     setIsNext(false);
                     setArchiveFileMount(archiveFilesMount ? false : true);
+                    setNotificationMount(notificationMount ? false : true);
                 }
             } catch (error) {
                 console.log("Error: ", error);
@@ -850,6 +854,7 @@ export const AdminContextProvider = ({ children }) => {
             }else{
                 setErrorResponse({message: response.message, isError: false});
                 setRequestMount(requestMount ? false : true);
+                setNotificationMount(notificationMount ? false : true);
             }
         } catch (error) {
             setIsLoading(false);
@@ -863,7 +868,7 @@ export const AdminContextProvider = ({ children }) => {
         setErrorResponse(null);
 
         try {
-            const response = await apostRequest(`${backendUrl}/api/admin/accept-document`, {acceptId: item.id.toString(), projectTitle: item.project_title});
+            const response = await apostRequest(`${backendUrl}/api/admin/accept-document`, {acceptId: item.id.toString(), projectTitle: item.project_title, userUploadId: item.user_id.toString()});
 
             setIsLoading(false);
 
@@ -872,6 +877,7 @@ export const AdminContextProvider = ({ children }) => {
             }else{
                 setErrorResponse({message: response.message, isError: false});
                 setArchiveFileMount(archiveFilesMount ? false : true);
+                setNotificationMount(notificationMount ? false : true);
             }
         } catch (error) {
             console.log("Error: ", error);

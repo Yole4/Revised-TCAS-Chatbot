@@ -67,7 +67,7 @@ function SchoolYear() {
                                                     <th>Date Created</th>
                                                     <th>School Year</th>
                                                     <th>Status</th>
-                                                    <th>Action</th>
+                                                    <th style={{textAlign: 'center'}}>Action</th>
                                                 </tr>
                                             </thead>
                                             <tbody>

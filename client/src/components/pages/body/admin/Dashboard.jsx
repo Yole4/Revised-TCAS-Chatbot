@@ -13,11 +13,13 @@ import { FiArchive } from "react-icons/fi";
 import { TbArchiveOff } from "react-icons/tb";
 
 import { AdminContext } from '../../../Context/AdminContext';
+import { PublicContext } from '../../../Context/PublicContext';
 
 function Dashboard() {
   document.title = "Dashboard";
 
-  const {departmentToSearch, courseList, schoolYearList, usersList} = useContext(AdminContext);
+  const { departmentToSearch, courseList, schoolYearList, usersList, usersRequestList } = useContext(AdminContext);
+  const { archiveFiles } = useContext(PublicContext);
 
   const navigate = useNavigate();
 
@@ -84,21 +86,19 @@ function Dashboard() {
               <div className="col-lg-3 col-6">
                 <div className="small-box bg-warning">
                   <div className="inner">
-                    <h3>6</h3>
-                    {/* <h3>{requestedUsers && requestedUsers.filter(item => item.status === 'Pending').length}</h3> */}
-                    <p>Pending Request User</p>
+                    <h3>{usersRequestList && usersRequestList.filter(item => item.status === 'Pending').length}</h3>
+                    <p>Pending Request (View File)</p>
                   </div>
                   <div className="icon">
                     <i><FaUsers /></i>
                   </div>
-                  <a href="#" className="small-box-footer" onClick={() => navigate('/student-list')}>More info <i className="fas fa-arrow-circle-right" /></a>
+                  <a href="#" className="small-box-footer" onClick={() => navigate('/request-user')}>More info <i className="fas fa-arrow-circle-right" /></a>
                 </div>
               </div>
               <div className="col-lg-3 col-6">
                 <div className="small-box bg-success">
                   <div className="inner">
-                    <h3>4</h3>
-                    {/* <h3>{archiveList && archiveList.filter(item => item.status === 'Published').length}</h3> */}
+                    <h3>{archiveFiles && archiveFiles.filter(item => item.status === 'Published').length}</h3>
                     <p>Publish Projects</p>
                   </div>
                   <div className="icon">
@@ -110,14 +110,25 @@ function Dashboard() {
               <div className="col-lg-3 col-6">
                 <div className="small-box bg-danger">
                   <div className="inner">
-                    <h3>66</h3>
-                    {/* <h3>{archiveList && archiveList.filter(item => item.status === 'UnPublish').length}</h3> */}
+                    <h3>{archiveFiles && archiveFiles.filter(item => item.status === 'UnPublish').length}</h3>
                     <p>UnPublish Projects</p>
                   </div>
                   <div className="icon">
                     <i><TbArchiveOff /></i>
                   </div>
                   <a href="#" className="small-box-footer" onClick={() => navigate('/archive-list')}>More info <i className="fas fa-arrow-circle-right" /></a>
+                </div>
+              </div>
+              <div className="col-lg-3 col-6">
+                <div className="small-box bg-warning">
+                  <div className="inner">
+                    <h3>{archiveFiles?.filter(item => item.confirmation === 0).length || 0}</h3>
+                    <p>Pending Request (Upload File)</p>
+                  </div>
+                  <div className="icon">
+                    <i><FaUsers /></i>
+                  </div>
+                  <a href="#" className="small-box-footer" onClick={() => navigate('/request-user')}>More info <i className="fas fa-arrow-circle-right" /></a>
                 </div>
               </div>
 
