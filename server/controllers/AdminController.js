@@ -693,7 +693,7 @@ const scanDocument = async (req, res) => {
 
 // add project 
 const addProject = async (req, res) => {
-    const { foundAbstract, pageNumber, fileName, department, course, schoolYear, projectTitle, members, userId } = req.body;
+    const { foundAbstract, pageNumber, fileName, department, course, schoolYear, projectTitle, members, userId, userType, fullname, chatbotInfo } = req.body;
 
     const validationRules = [
         { validator: validator.isLength, options: { min: 1 } },
@@ -728,20 +728,52 @@ const addProject = async (req, res) => {
                         return res.status(401).send({ message: "Invalid File Name!" });
                     }
                     else {
-                        const insertNew = `INSERT INTO archive_files (abstract, page_number, file_path, department, course, school_year, project_title, members, image_banner, date) VALUES (?,?,?,?,?,?,?,?,?,?)`;
-                        db.query(insertNew, [submitFoundAbstract, submitPageNumber, submitFileName, submitDepartment, submitCourse, submitSchoolYear, submitProjectTitle, submitMembers, uniqueFilePath, currentDate], (error, results) => {
+                        const insertNew = `INSERT INTO archive_files (abstract, page_number, file_path, department, course, school_year, project_title, members, image_banner, date, confirmation, request_name) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`;
+                        db.query(insertNew, [submitFoundAbstract, submitPageNumber, submitFileName, submitDepartment, submitCourse, submitSchoolYear, submitProjectTitle, submitMembers, uniqueFilePath, currentDate, userType === "Admin" ? 1 : 0, fullname], (error, results) => {
                             if (error) {
                                 res.status(401).json({ message: "Server side error!" });
                             } else {
-                                // insert notification
-                                const insertNotification = `INSERT INTO notifications (user_id, notification_type, content, date) VALUES (?, ?, ? ,?)`;
-                                db.query(insertNotification, [sanitizeId, "Add Project", `You've successfully added ${submitProjectTitle} to archive`, currentDate], (error, results) => {
-                                    if (error) {
-                                        res.status(401).json({ message: "Server side error!" });
-                                    } else {
-                                        res.status(200).json({ message: `${submitProjectTitle} has been successfully added!` });
-                                    }
-                                });
+                                const documentId = results.insertId;
+
+                                const insertChatbotInformation = chatbotInfo.map(item => {
+                                    return new Promise((resolve, reject) => {
+                                        const insertQuery = 'INSERT INTO chatbot_keywords (keyword, information, date) VALUES (?, ?, ?)';
+                                        db.query(insertQuery, [item.keywords, item.information, currentDate], (error, results) => {
+                                            if (error) {
+                                                reject(error);
+                                            } else {
+                                                resolve(results);
+                                            }
+                                        })
+                                    })
+                                })
+
+                                Promise.all(insertChatbotInformation).then(() => {
+                                    // insert notification
+                                    const insertNotification = `INSERT INTO notifications (user_id, notification_type, content, date) VALUES (?, ?, ? ,?)`;
+                                    db.query(insertNotification, [sanitizeId, "Add Project", `You've successfully added ${submitProjectTitle} to archive`, currentDate], (error, results) => {
+                                        if (error) {
+                                            res.status(401).json({ message: "Server side error!" });
+                                        } else {
+                                            // insert admin notification
+                                            if (userType === "Admin") {
+                                                res.status(200).json({ message: `${submitProjectTitle} has been successfully added!` });
+                                            } else {
+                                                const adminNot = `INSERT INTO notifications (user_id, notification_type, content, date, url) VALUES (?, ?, ? ,?, ?)`;
+                                                db.query(adminNot, [1, "Request Project", `${fullname} requested to upload new document`, currentDate, documentId], (error, results) => {
+                                                    if (error) {
+                                                        res.status(401).json({ message: "Server side error!" });
+                                                    } else {
+                                                        res.status(200).json({ message: `${submitProjectTitle} has been successfully requested!` });
+                                                    }
+                                                })
+                                            }
+                                        }
+                                    });
+                                }).catch(insertError => {
+                                    console.log("Something wrong on inserting data", error);
+                                    res.status(401).json({ message: "Something went wrong on inserting data!" });
+                                })
                             }
                         });
                     }
@@ -878,7 +910,7 @@ const addRequest = async (req, res) => {
             } else {
                 // insert notification
                 const insertNotification = `INSERT INTO notifications (user_id, notification_type, content, date) VALUES (?, ?, ?, ?)`;
-                db.query(insertNotification, ["1", "Request Document", `${sanitizeFullName} requested to view the document of ${sanitizeProjectTitle}`,currentDate], (error, results) => {
+                db.query(insertNotification, ["1", "Request Document", `${sanitizeFullName} requested to view the document of ${sanitizeProjectTitle}`, currentDate], (error, results) => {
                     if (error) {
                         res.status(401).json({ message: "Server side error!" });
                     } else {
@@ -947,7 +979,22 @@ const requestResponse = async (req, res) => {
     }
 }
 
+// accept document 
+const acceptDocument = async (req, res) => {
+    const { acceptId, projectTitle } = req.body;
+
+    const handleAccept = `UPDATE archive_files SET confirmation = ? WHERE id = ?`;
+    db.query(handleAccept, [1, acceptId], (error, results) => {
+        if (error) {
+            res.status(401).json({ message: "Server side error!" });
+        } else {
+            res.status(200).json({ message: `${projectTitle} Accepted!` });
+        }
+    })
+}
+
 module.exports = {
     fetchDepartment, addDepartment, editDepartment, deleteDepartment, fetchCourse, addCourse, editCourse, deleteCourse, fetchSchoolYear, addSY, editSY, deleteSY,
-    fetchUsers, deleteUser, updateSettings, updateSystemCover, updateSystemLogo, scanDocument, addProject, updateArchiveStatus, deleteArchive, getUserRequest, getRequestId, addRequest, requestResponse
+    fetchUsers, deleteUser, updateSettings, updateSystemCover, updateSystemLogo, scanDocument, addProject, updateArchiveStatus, deleteArchive, getUserRequest, getRequestId, addRequest, requestResponse,
+    acceptDocument
 };

@@ -31,7 +31,7 @@ function Home() {
                 <div id="header" style={{ backgroundImage: settingsData && coverUrl ? `url(${coverUrl})` : 'none', backgroundRepeat: 'no-repeat', backgroundSize: 'cover', backgroundPosition: 'center center' }} className="shadow mb-4">
 
                     <div className="d-flex justify-content-center h-100 w-100 align-items-center flex-column px-3">
-                        <h1 className="w-100 text-center site-title" style={{ marginBottom: '20px' }}>{settingsData && settingsData.system_name}</h1>
+                        <h1 className="w-100 text-center site-title" style={{ marginBottom: '40px', fontFamily: 'Perpetua Titling MT', fontSize: '2.5em', color: '#403d3d', fontWeight: 'bold', textShadow: '2px 2px 4px rgba(0, 0, 0, 0.3)' }}>{settingsData && settingsData.system_name}</h1>
                         <a href="#" onClick={() => navigate('/projects')} className="btn btn-lg btn-light rounded-pill explore" id="enrollment"><b>Explore Projects</b></a>
                     </div>
                 </div>

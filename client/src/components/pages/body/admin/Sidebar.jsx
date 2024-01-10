@@ -68,7 +68,15 @@ function Sidebar() {
                                 <a className={location.pathname === '/request-user' ? 'nav-link nav-home hover-side' : 'nav-link nav-home'}>
                                     <i className="nav-icon"><FaUsers /></i>
                                     <p style={{ marginLeft: '10px' }}>
-                                        Request User
+                                        Request User To View Document
+                                    </p>
+                                </a>
+                            </li>
+                            <li className="nav-item dropdown" style={{ cursor: 'pointer' }} onClick={() => navigate('/document-request')}>
+                                <a className={location.pathname === '/document-request' ? 'nav-link nav-home hover-side' : 'nav-link nav-home'}>
+                                    <i className="nav-icon"><FaUsers /></i>
+                                    <p style={{ marginLeft: '10px' }}>
+                                        Request User To Upload Document
                                     </p>
                                 </a>
                             </li>

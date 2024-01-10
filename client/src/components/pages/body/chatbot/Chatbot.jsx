@@ -8,7 +8,7 @@ import { ChatbotContext } from '../../../Context/ChatbotContext';
 function Chatbot() {
     const navigate = useNavigate();
 
-    const { isChatbot, setIsChatbot, userInput, setUserInput, disableChat, handleChat, userMessages, loadingInputMessage } = useContext(ChatbotContext);
+    const { isChatbot, setIsChatbot, userInput, setUserInput, disableChat, handleChat, userMessages, loadingInputMessage, chatbotLoading } = useContext(ChatbotContext);
 
     const { userCredentials, isLoading } = useContext(AuthContext);
 

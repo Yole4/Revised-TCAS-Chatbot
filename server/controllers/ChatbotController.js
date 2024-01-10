@@ -37,7 +37,7 @@ const chatRequest = async (req, res) => {
     }
 
     const badWords = BadWords();
-    const chatRequest = createChatbot();
+    const chatRequest = await createChatbot();
 
     let isChatBotResponse = false;
 

@@ -51,7 +51,7 @@ function Projects() {
                                             {archiveFiles && archiveFiles.map(item => (
                                                 qcValue || qdValue || qValue ? (
                                                     qcValue ? (
-                                                        item.course === qcValue && (
+                                                        item.course === qcValue && item.confirmation === 1 && (
                                                             item.status === "Published" && (
                                                                 <div onClick={() => navigate(`/view-project/${1000 + item.id}`)} className="text-decoration-none text-dark list-group-item list-group-item-action" style={{ cursor: 'pointer' }}>
                                                                     <div className="row">
@@ -69,7 +69,7 @@ function Projects() {
                                                         )
                                                     ) : (
                                                         qdValue ? (
-                                                            item.department === qdValue && (
+                                                            item.department === qdValue && item.confirmation === 1 && (
                                                                 item.status === "Published" && (
                                                                     <div onClick={() => navigate(`/view-project/${1000 + item.id}`)} className="text-decoration-none text-dark list-group-item list-group-item-action" style={{ cursor: 'pointer' }}>
                                                                         <div className="row">
@@ -93,7 +93,7 @@ function Projects() {
                                                                 const overallMatchPercentage = Math.max(titleMatchPercentage, abstractMatchPercentage);
                                                             
                                                                 return overallMatchPercentage >= 1 && (
-                                                                    item.status === "Published" && (
+                                                                    item.status === "Published" && item.confirmation === 1 && (
                                                                         <div onClick={() => navigate(`/view-project/${1000 + item.id}`)} className="text-decoration-none text-dark list-group-item list-group-item-action" style={{ cursor: 'pointer' }}>
                                                                             <div className="row">
                                                                                 <div className="col-lg-4 col-md-5 col-sm-12 text-center">
@@ -112,7 +112,7 @@ function Projects() {
                                                         )
                                                     )
                                                 ) : (
-                                                    item.status === "Published" && (
+                                                    item.status === "Published" && item.confirmation === 1 && (
                                                         <div onClick={() => navigate(`/view-project/${1000 + item.id}`)} className="text-decoration-none text-dark list-group-item list-group-item-action" style={{ cursor: 'pointer' }}>
                                                             <div className="row">
                                                                 <div className="col-lg-4 col-md-5 col-sm-12 text-center">

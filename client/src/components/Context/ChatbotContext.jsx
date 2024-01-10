@@ -15,6 +15,8 @@ export const ChatbotContextProvider = ({ children }) => {
         userMessage: [],
         botMessage: []
     });
+    const [chatbotLoading, setChatbotLoading] = useState(false);
+
     // const [messages, setMessages] = useState([]);
     const [userInput, setUserInput] = useState('');
     const [chatbotMount, setChatbotMount] = useState(false);
@@ -24,7 +26,7 @@ export const ChatbotContextProvider = ({ children }) => {
 
     const handleChat = async (e) => {
         e.preventDefault();
-        setIsLoading(true);
+        setChatbotLoading(true);
 
         if (userInput && !disableChat) {
             setDisableChat(true);
@@ -33,7 +35,7 @@ export const ChatbotContextProvider = ({ children }) => {
 
             try {
                 const response = await apostRequest(`${backendUrl}/api/chatbot/chat-request`, { userInput, userId: userId.toString() });
-                setIsLoading(false);
+                setChatbotLoading(false);
                 setDisableChat(false);
 
                 if (response.error) {
@@ -44,7 +46,7 @@ export const ChatbotContextProvider = ({ children }) => {
             } catch (error) {
                 setDisableChat(false);
                 console.log(error);
-                setIsLoading(false);
+                setChatbotLoading(false);
             }
         }
     };
@@ -55,11 +57,11 @@ export const ChatbotContextProvider = ({ children }) => {
     useEffect(() => {
         if (userId) {
             const getMessage = async (e) => {
-                setIsLoading(true);
+                setChatbotLoading(true);
                 try {
                     const response = await apostRequest(`${backendUrl}/api/chatbot/get-chatbot-messages`, {userId: userId.toString()});
 
-                    setIsLoading(false);
+                    setChatbotLoading(false);
 
                     if (response.error) {
                         console.log(response.message);
@@ -71,7 +73,7 @@ export const ChatbotContextProvider = ({ children }) => {
                     }   
                 } catch (error) {
                     console.log("Error: ",error);
-                    setIsLoading(false);
+                    setChatbotLoading(false);
                 }
             };
             getMessage();
@@ -79,6 +81,6 @@ export const ChatbotContextProvider = ({ children }) => {
     }, [userId, chatbotMount]);
 
     return <ChatbotContext.Provider value={{
-        isChatbot, setIsChatbot, messages, setMessages, userInput, setUserInput, disableChat, setDisableChat, handleChat, userMessages, loadingInputMessage
+        isChatbot, setIsChatbot, messages, setMessages, userInput, setUserInput, disableChat, setDisableChat, handleChat, userMessages, loadingInputMessage, chatbotLoading
     }}>{children}</ChatbotContext.Provider>
 }

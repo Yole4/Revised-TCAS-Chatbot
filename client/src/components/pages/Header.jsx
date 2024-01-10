@@ -85,10 +85,15 @@ function Header() {
 
                                     <div style={{ maxHeight: '400px', overflow: 'auto' }}>
                                         {notificationList && notificationList.reverse().map(item => (
-                                            <div key={item.id} className='dropdown-item other' onClick={() => item.notification_type === "Request Document" && navigate('/student')} style={{ fontSize: '12px', cursor: 'pointer', backgroundColor: item.seen === 0 ? 'rgba(131, 131, 131, 0.20)' : '' }}>
+                                            <div key={item.id} className='dropdown-item other' onClick={() => item.notification_type === "Request Document" ? navigate('/student') : item.notification_type === "Request Project" && navigate('/document-request')} style={{ fontSize: '12px', cursor: 'pointer', backgroundColor: item.seen === 0 ? 'rgba(131, 131, 131, 0.20)' : '' }}>
                                                 <div style={{ display: 'flex' }}>
                                                     <i className="fas fa-bell mr-2" style={{ color: 'rgba(80, 66, 66, 0.935)', fontSize: '15px', marginTop: '5px' }} /><p style={{ marginLeft: '10px' }}>{item.content}</p>
                                                 </div>
+                                                {item.notification_type === "Request Project" && (
+                                                    <div style={{ marginTop: '6px', marginBottom: '6px' }}>
+                                                        <button style={{ width: 'calc(100% - 30px)', marginLeft: '30px', height: '25px', fontSize: '12px', justifyContent: 'center', alignItems: 'center', display: 'flex' }} className='btn btn-primary'>Accept</button>
+                                                    </div>
+                                                )}
                                                 <div style={{ marginLeft: '10px' }}>
                                                     <p style={{ marginLeft: 22, fontSize: 10, color: 'rgb(105, 96, 96)' }}>{item.date}</p>
                                                 </div>
@@ -192,7 +197,7 @@ function Header() {
                             </li>
 
 
-                            {userCredentials && userCredentials.user_type === "Admin" && (
+                            {user && (
                                 <li className="nav-item" Style={{ cursor: 'pointer' }} onClick={() => navigate('/new-project')}>
                                     <span className={location.pathname === '/new-project' ? 'nav-link active' : 'nav-link'} style={{ cursor: 'pointer' }}>Submit New Project</span>
                                 </li>

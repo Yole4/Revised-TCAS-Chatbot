@@ -2,7 +2,7 @@ const express = require('express');
 const {verifyToken} = require('../auth/Authentication');
 const multer = require('multer');
 
-const { fetchDepartment, addDepartment, editDepartment, deleteDepartment, fetchCourse, editCourse, deleteCourse, addCourse, fetchSchoolYear, addSY, editSY, deleteSY, fetchUsers, deleteUser, updateSettings, updateSystemLogo, updateSystemCover, scanDocument, addProject, updateArchiveStatus, deleteArchive, getUserRequest, getRequestId, addRequest, requestResponse } = require('../controllers/AdminController');
+const { fetchDepartment, addDepartment, editDepartment, deleteDepartment, fetchCourse, editCourse, deleteCourse, addCourse, fetchSchoolYear, addSY, editSY, deleteSY, fetchUsers, deleteUser, updateSettings, updateSystemLogo, updateSystemCover, scanDocument, addProject, updateArchiveStatus, deleteArchive, getUserRequest, getRequestId, addRequest, requestResponse, acceptDocument } = require('../controllers/AdminController');
 
 const router = express.Router();
 
@@ -43,5 +43,6 @@ router.get('/get-users-request', verifyToken, getUserRequest);
 router.post('/request-id', verifyToken, getRequestId);
 router.post('/user-request', verifyToken, addRequest);
 router.post('/request-response', verifyToken, requestResponse);
+router.post('/accept-document', verifyToken, acceptDocument);
 
 module.exports = router;

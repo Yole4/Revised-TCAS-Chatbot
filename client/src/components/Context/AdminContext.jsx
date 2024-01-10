@@ -620,6 +620,10 @@ export const AdminContextProvider = ({ children }) => {
         }
     };
 
+    // chatbot form data
+    const [formData, setFormData] = useState([{ keywords: '', information: '' }]);
+    const [isNext, setIsNext] = useState(false);
+
     const handleSubmitProject = async (e) => {
         e.preventDefault();
 
@@ -631,11 +635,18 @@ export const AdminContextProvider = ({ children }) => {
 
             const addProject = new FormData();
             addProject.append('userId', userId.toString());
+            addProject.append('userType', userCredentials.user_type);
+            addProject.append('fullname', userCredentials.fullname);
             for (const key in submitThesisAndCapstone) {
                 if (submitThesisAndCapstone[key] !== null) {
                     addProject.append(key, submitThesisAndCapstone[key]);
                 }
             }
+
+            formData.forEach((data, index) => {
+                addProject.append(`chatbotInfo[${index}][keywords]`, data.keywords);
+                addProject.append(`chatbotInfo[${index}][information]`, data.information);
+              });
 
             try {
                 const response = await apostRequest(`${backendUrl}/api/admin/add-project`, addProject);
@@ -657,6 +668,8 @@ export const AdminContextProvider = ({ children }) => {
                         members: '',
                         bannerImage: null
                     });
+                    setFormData([{ keywords: '', information: '' }]);
+                    setIsNext(false);
                     setArchiveFileMount(archiveFilesMount ? false : true);
                 }
             } catch (error) {
@@ -844,6 +857,28 @@ export const AdminContextProvider = ({ children }) => {
         }
     }
 
+    // #############################################################    ACCEPT USERS REQUEST TO UPLOAD DOCUMENT ##########################################################
+    const handleAcceptFile = async(item) => {
+        setIsLoading(true);
+        setErrorResponse(null);
+
+        try {
+            const response = await apostRequest(`${backendUrl}/api/admin/accept-document`, {acceptId: item.id.toString(), projectTitle: item.project_title});
+
+            setIsLoading(false);
+
+            if (response.error) {
+                setErrorResponse({message: response.message, isError: true});
+            }else{
+                setErrorResponse({message: response.message, isError: false});
+                setArchiveFileMount(archiveFilesMount ? false : true);
+            }
+        } catch (error) {
+            console.log("Error: ", error);
+            setIsLoading(false);
+        }
+    }
+
     return <AdminContext.Provider value={{
         addDepartmentData,
         setAddDepartmentData,
@@ -877,6 +912,7 @@ export const AdminContextProvider = ({ children }) => {
         updateFileData, setUpdateFileData, handleUpdateFile, isUpdateFile, setIsUpdateFile,
         deleteArchiveData, setDeleteArchiveData, handleDeleteArchive, isDeleteArchive, setIsDeleteArchive,
         usersRequestList, setArchiveId, requestData,
-        handleButtonRequest, handleAccept
+        handleButtonRequest, handleAccept, handleAcceptFile,
+        formData, setFormData, isNext, setIsNext
     }}>{children}</AdminContext.Provider>
 }
