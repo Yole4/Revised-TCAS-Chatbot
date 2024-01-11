@@ -74,7 +74,7 @@ function UsersRequestUpload() {
                                                             <span>No Requested found!</span>
                                                         </div>
                                                     ) : (
-                                                        archiveFiles.map((item, index) => (
+                                                        archiveFiles.reverse().map((item, index) => (
                                                             item.confirmation === 0 && (
                                                                 <tr>
                                                                     <td><p className="m-0 truncate-1">{item.request_name}</p></td>

@@ -19,7 +19,7 @@ function ViewProject() {
 
     const { archiveFiles } = useContext(PublicContext);
     const { userCredentials, isLoading, setErrorResponse, errorResponse, user } = useContext(AuthContext);
-    const { setArchiveId, requestData, handleButtonRequest } = useContext(AdminContext);
+    const { setArchiveId, requestData, handleButtonRequest, usersList } = useContext(AdminContext);
 
     // reset response after 5 seconds
     const [responseCountDown, setResponseCountDown] = useState(false);
@@ -58,7 +58,11 @@ function ViewProject() {
                                         item.id === (projectId.id) - 1000 && (
                                             <div className="container-fluid">
                                                 <h2><b>{item.project_title}</b></h2>
-                                                <small className="text-muted">Submitted by <b className="text-info">Admin</b> {item.date}</small>
+                                                <small className="text-muted">Submitted by <b className="text-info">{usersList && usersList
+                                                    .filter(userItem => userItem.id === item.user_id)
+                                                    .map(filteredUser => (
+                                                        <b className="text-info" key={filteredUser.id}>{filteredUser.fullname}</b>
+                                                    ))}</b> {item.date}</small>
                                                 <hr />
                                                 <center>
                                                     <img src={`${backendUrl}/${item.image_banner}`} alt="Banner Image" id="banner-img" className="img-fluid border bg-gradient-dark" />
@@ -84,7 +88,7 @@ function ViewProject() {
                                                 </fieldset>
                                                 <fieldset>
                                                     {user && (
-                                                        userCredentials && userCredentials.user_type === "Admin" || requestData && requestData.status === "Approved" ? (
+                                                        userCredentials && userCredentials.user_type === "Admin" || requestData && requestData.status === "Approved" || userCredentials && userCredentials.id === item.user_id ? (
                                                             <>
                                                                 <legend className="text-navy">Project Document:</legend>
                                                                 <div className="pl-4">

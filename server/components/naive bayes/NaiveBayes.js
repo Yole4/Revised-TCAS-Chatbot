@@ -46,11 +46,17 @@ async function createChatbot() {
 
             for (let i = 0; i < data.length; i++) {
                 if (intent === i.toString()) {
-                    return data[i].information;
+                    return {
+                        information: data[i].information,
+                        project_id: data[i].project_id
+                    };
                 }
             }
 
-            return "I'm sorry, I didn't quite understand that. Can you please rephrase or ask another question?";
+            return {
+                information: "I'm sorry, I didn't quite understand that. Can you please rephrase or ask another question?",
+                project_id: null
+            };
         }
 
         return respondToUserInput;

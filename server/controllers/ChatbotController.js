@@ -63,12 +63,12 @@ const chatRequest = async (req, res) => {
 
     if (chat && !test) {
         test = false;
-        response = chat;
+        response = chat.information;
     }
 
-    const insertRequest = `INSERT INTO chatbot (user_id, user_message, response, date) VALUES (?,?,?,?)`;
+    const insertRequest = `INSERT INTO chatbot (user_id, user_message, response, date, project_id) VALUES (?,?,?,?,?)`;
 
-    db.query(insertRequest, [sanitizeUserId, sanitizeUserInput, response, currentDate], (error, results) => {
+    db.query(insertRequest, [sanitizeUserId, sanitizeUserInput, response, currentDate, test ? 0 : chat.project_id], (error, results) => {
         if (error) {
             res.status(401).json({ message: "Server side error!" });
         } else {
