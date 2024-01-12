@@ -1154,8 +1154,8 @@ const acceptDocument = async (req, res) => {
                     const userNot = `INSERT INTO notifications (user_id, notification_type, content, date) VALUES (?,?,?,?)`;
                     db.query(userNot, [userUploadId, "Accept Request", `Your Request on ${projectTitle} has been approved by admin!`, currentDate], (error, results) => {
                         if (error) {
-                            res.status(401).json({message: "Server side error!"});
-                        }else{
+                            res.status(401).json({ message: "Server side error!" });
+                        } else {
                             res.status(200).json({ message: `${projectTitle} Accepted!` });
                         }
                     })
@@ -1165,8 +1165,119 @@ const acceptDocument = async (req, res) => {
     })
 }
 
+// add new chatbot information
+const addChatbotInfo = async (req, res) => {
+    const { userId, chatbotInfo } = req.body;
+
+    const test = new Date();
+
+    const options = {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: true,
+    };
+
+    const currentDate = test.toLocaleString('en-US', options);
+
+    const insertChatbotInformation = chatbotInfo.map(item => {
+        return new Promise((resolve, reject) => {
+            const insertQuery = 'INSERT INTO chatbot_keywords (keyword, information, date, status) VALUES (?, ?, ?, ?)';
+            db.query(insertQuery, [item.keywords, item.information, currentDate, 1], (error, results) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(results);
+                }
+            })
+        })
+    })
+
+    Promise.all(insertChatbotInformation).then(() => {
+        // insert admin notification
+        const adminNot = `INSERT INTO notifications (user_id, notification_type, content, date) VALUES (?, ? ,?, ?)`;
+        db.query(adminNot, [userId, "Add Chatbot Information", `You've successfully added new chatbot information.`, currentDate], (error, results) => {
+            if (error) {
+                res.status(401).json({ message: "Server side error!" });
+            } else {
+                res.status(200).json({ message: `Successfully Added` });
+            }
+        })
+    }).catch(insertError => {
+        console.log("Something wrong on inserting data", error);
+        res.status(401).json({ message: "Something went wrong on inserting data!" });
+    })
+}
+
+// fetch chatbot information
+const fetchChatbotInfo = async (req, res) => {
+    const fetchChatbot = `SELECT * FROM chatbot_keywords WHERE status = ? AND isDelete = ?`;
+    db.query(fetchChatbot, [1, "not"], (error, results) => {
+        if (error) {
+            res.status(401).json({ message: "Server side error!" });
+        } else {
+            res.status(200).json({ message: results });
+        }
+    })
+}
+
+// edit chatbot information
+const editChatbotInfo = async (req, res) => {
+    const {editChatbotData, userId} = req.body;
+
+    const validationRules = [
+        { validator: validator.isLength, options: { min: 1 } },
+    ];
+
+    const sanitizeEditId = sanitizeAndValidate(editChatbotData.editId.toString(), validationRules);
+    const sanitizeKeyword = sanitizeAndValidate(editChatbotData.keyword, validationRules);
+    const sanitizeInformation = sanitizeAndValidate(editChatbotData.information, validationRules);
+    const sanitizeUserId = sanitizeAndValidate(userId, validationRules);
+
+    if (!sanitizeEditId || !sanitizeKeyword || !sanitizeInformation || !sanitizeUserId) {
+        res.status(401).json({message: "Invalid Input!"});
+    }else{
+        const updateChatbot = `UPDATE chatbot_keywords SET keyword = ?, information = ? WHERE id = ?`;
+        db.query(updateChatbot, [sanitizeKeyword, sanitizeInformation, sanitizeEditId], (error, results) => {
+            if (error) {
+                res.status(401).json({message: "Server side error!"});
+            }else{
+                res.status(200).json({message: "Chatbot information updated!"});
+            }
+        })
+    }
+}
+
+// delete chabot information
+const deleteChatbotInfo = async (req, res) => {
+    const {deleteChatbotData, userId} = req.body;
+
+    const validationRules = [
+        { validator: validator.isLength, options: { min: 1 } },
+    ];
+
+    const deleteId = sanitizeAndValidate(deleteChatbotData.deleteId.toString(), validationRules);
+    const sanitizeUserId = sanitizeAndValidate(userId, validationRules);
+
+    if (!deleteId || !sanitizeUserId) {
+        res.status(401).json({message: "Invalid Input!"});
+    }else{
+        // delete
+        const deleteInfo = `UPDATE chatbot_keywords SET isDelete = ? WHERE id = ?`;
+        db.query(deleteInfo, ["Deleted", deleteId], (error, results) => {
+            if (error) {
+                res.status(401).json({message: "Server side error!"});
+            }else{
+                res.status(200).json({message: `Successfully Deleted!`});
+            }
+        })
+    }
+}
+
 module.exports = {
     fetchDepartment, addDepartment, editDepartment, deleteDepartment, fetchCourse, addCourse, editCourse, deleteCourse, fetchSchoolYear, addSY, editSY, deleteSY,
     fetchUsers, deleteUser, updateSettings, updateSystemCover, updateSystemLogo, scanDocument, addProject, updateArchiveStatus, deleteArchive, getUserRequest, getRequestId, addRequest, requestResponse,
-    acceptDocument
+    acceptDocument, addChatbotInfo, fetchChatbotInfo, editChatbotInfo, deleteChatbotInfo
 };

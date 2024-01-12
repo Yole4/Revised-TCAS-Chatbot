@@ -2,7 +2,7 @@ const express = require('express');
 const {verifyToken} = require('../auth/Authentication');
 const multer = require('multer');
 
-const { fetchDepartment, addDepartment, editDepartment, deleteDepartment, fetchCourse, editCourse, deleteCourse, addCourse, fetchSchoolYear, addSY, editSY, deleteSY, fetchUsers, deleteUser, updateSettings, updateSystemLogo, updateSystemCover, scanDocument, addProject, updateArchiveStatus, deleteArchive, getUserRequest, getRequestId, addRequest, requestResponse, acceptDocument } = require('../controllers/AdminController');
+const { fetchDepartment, addDepartment, editDepartment, deleteDepartment, fetchCourse, editCourse, deleteCourse, addCourse, fetchSchoolYear, addSY, editSY, deleteSY, fetchUsers, deleteUser, updateSettings, updateSystemLogo, updateSystemCover, scanDocument, addProject, updateArchiveStatus, deleteArchive, getUserRequest, getRequestId, addRequest, requestResponse, acceptDocument, addChatbotInfo, fetchChatbotInfo, editChatbotInfo, deleteChatbotInfo } = require('../controllers/AdminController');
 
 const router = express.Router();
 
@@ -44,5 +44,9 @@ router.post('/request-id', verifyToken, getRequestId);
 router.post('/user-request', verifyToken, addRequest);
 router.post('/request-response', verifyToken, requestResponse);
 router.post('/accept-document', verifyToken, acceptDocument);
+router.post('/add-chatbot-info', verifyToken, addChatbotInfo);
+router.get('/fetch-chatbot-info', verifyToken, fetchChatbotInfo);
+router.post('/edit-chatbot-info', verifyToken, editChatbotInfo);
+router.post('/delete-chatbot-info', verifyToken, deleteChatbotInfo);
 
 module.exports = router;

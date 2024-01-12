@@ -356,7 +356,7 @@ export const AuthContextProvider = ({ children }) => {
                     if (response.error){
                         console.log(response.message);
                     }else{
-                        setNotificationList(response.message);
+                        setNotificationList(response.message.reverse());
                     }
                 } catch (error) {
                     setIsLoading(false);

@@ -18,6 +18,7 @@ import Users from "./components/pages/body/admin/Users";
 import Settings from "./components/pages/body/admin/Settings";
 import ViewProject from "./components/pages/body/ViewProject";
 import UsersRequestUpload from "./components/pages/body/admin/UsersRequestUpload";
+import ChatbotKnowledge from "./components/pages/body/admin/ChatbotKnowledge";
 
 // undefine 404
 import Undefine from "./components/pages/404/Undefine";
@@ -53,6 +54,7 @@ function App() {
         <Route path="/school-year" element={ user? user.user && user.user.userType === "Admin" ? <SchoolYear /> : <Home /> : <Login />} />
         <Route path="/users" element={ user ? user.user && user.user.userType === "Admin" ? <Users /> : <Home /> : <Login />} />
         <Route path="/settings" element={ user? user.user && user.user.userType === "Admin" ? <Settings /> : <Home /> : <Login />} />
+        <Route path="/chatbot" element={ user? user.user && user.user.userType === "Admin" ? <ChatbotKnowledge /> : <Home /> : <Login />} />
 
         <Route path="*" element={<Undefine />} />
       </Routes>

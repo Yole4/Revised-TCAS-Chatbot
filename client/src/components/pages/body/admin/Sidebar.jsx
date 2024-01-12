@@ -19,8 +19,8 @@ import { PublicContext } from '../../../Context/PublicContext';
 
 function Sidebar() {
 
-    const {user, userCredentials} = useContext(AuthContext);
-    const {settingsData} = useContext(PublicContext);
+    const { user, userCredentials } = useContext(AuthContext);
+    const { settingsData } = useContext(PublicContext);
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -86,6 +86,14 @@ function Sidebar() {
 
                     <nav className="mt-2" style={{ marginLeft: '10px' }}>
                         <ul className="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                            <li className="nav-item dropdown" style={{ cursor: 'pointer' }} onClick={() => navigate('/chatbot')}>
+                                <a className={location.pathname === '/chatbot' ? 'nav-link nav-home hover-side' : 'nav-link nav-home'} style={{ display: 'flex', justifyContent: 'left', alignItems: 'center' }}>
+                                    <span className="material-symbols-outlined">smart_toy</span>
+                                    <p style={{ marginLeft: '10px' }}>
+                                        Chatbot
+                                    </p>
+                                </a>
+                            </li>
                             <li className="nav-item dropdown" style={{ cursor: 'pointer' }} onClick={() => navigate('/department')}>
                                 <a className={location.pathname === '/department' ? 'nav-link nav-home hover-side' : 'nav-link nav-home'}>
                                     <i className="nav-icon"><FaThList /></i>

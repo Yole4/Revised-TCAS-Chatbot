@@ -626,6 +626,7 @@ export const AdminContextProvider = ({ children }) => {
     // chatbot form data
     const [formData, setFormData] = useState([{ keywords: '', information: '' }]);
     const [isNext, setIsNext] = useState(false);
+    const [chatbotMount, setChatbotMount] = useState(false);
 
     const handleSubmitProject = async (e) => {
         e.preventDefault();
@@ -649,7 +650,7 @@ export const AdminContextProvider = ({ children }) => {
             formData.forEach((data, index) => {
                 addProject.append(`chatbotInfo[${index}][keywords]`, data.keywords);
                 addProject.append(`chatbotInfo[${index}][information]`, data.information);
-              });
+            });
 
             try {
                 const response = await apostRequest(`${backendUrl}/api/admin/add-project`, addProject);
@@ -675,6 +676,7 @@ export const AdminContextProvider = ({ children }) => {
                     setIsNext(false);
                     setArchiveFileMount(archiveFilesMount ? false : true);
                     setNotificationMount(notificationMount ? false : true);
+                    setChatbotMount(chatbotMount ? false : true);
                 }
             } catch (error) {
                 console.log("Error: ", error);
@@ -698,14 +700,14 @@ export const AdminContextProvider = ({ children }) => {
         setErrorResponse(null);
 
         try {
-            const response = await apostRequest(`${backendUrl}/api/admin/update-archive-status`, {updateFileData, userId: userId.toString()});
+            const response = await apostRequest(`${backendUrl}/api/admin/update-archive-status`, { updateFileData, userId: userId.toString() });
 
             setIsLoading(false);
 
-            if (response.error){
-                setErrorResponse({message: response.message, isError: true});
-            }else{
-                setErrorResponse({message: response.message, isError: false});
+            if (response.error) {
+                setErrorResponse({ message: response.message, isError: true });
+            } else {
+                setErrorResponse({ message: response.message, isError: false });
                 setIsUpdateFile(false);
                 setArchiveFileMount(archiveFilesMount ? false : true);
             }
@@ -729,19 +731,19 @@ export const AdminContextProvider = ({ children }) => {
         setErrorResponse(null);
 
         try {
-            const response = await apostRequest(`${backendUrl}/api/admin/delete-archive`, {deleteArchiveData, userId: userId.toString()});
+            const response = await apostRequest(`${backendUrl}/api/admin/delete-archive`, { deleteArchiveData, userId: userId.toString() });
 
             setIsLoading(false);
 
             if (response.error) {
-                setErrorResponse({message: response.message, isError: true});
-            }else{
-                setErrorResponse({message: response.message, isError: false});
+                setErrorResponse({ message: response.message, isError: true });
+            } else {
+                setErrorResponse({ message: response.message, isError: false });
                 setIsDeleteArchive(false);
                 setArchiveFileMount(archiveFilesMount ? false : true);
             }
         } catch (error) {
-            console.log("Error: ",error);
+            console.log("Error: ", error);
             setIsLoading(false);
         }
     }
@@ -760,14 +762,14 @@ export const AdminContextProvider = ({ children }) => {
 
                     setIsLoading(false);
 
-                    if (response.error){
+                    if (response.error) {
                         console.log(response.message);
-                    }else{
+                    } else {
                         setUsersRequestList(response.message);
                     }
                 } catch (error) {
                     setIsLoading(false);
-                    console.log("Error: ",error);
+                    console.log("Error: ", error);
                 }
             };
             getUserRequest();
@@ -784,13 +786,13 @@ export const AdminContextProvider = ({ children }) => {
                 setIsLoading(true);
 
                 try {
-                    const response = await apostRequest(`${backendUrl}/api/admin/request-id`, {archiveId, userId: userId.toString()});
+                    const response = await apostRequest(`${backendUrl}/api/admin/request-id`, { archiveId, userId: userId.toString() });
 
                     setIsLoading(false);
 
                     if (response.error) {
                         console.log(response.message);
-                    }else{
+                    } else {
                         setRequestData(response.message);
                     }
                 } catch (error) {
@@ -811,29 +813,29 @@ export const AdminContextProvider = ({ children }) => {
         setIsLoading(true);
 
         try {
-            const response = await apostRequest(`${backendUrl}/api/admin/user-request`, {archiveId, projectTitle, fullname, userId: userId.toString()});
+            const response = await apostRequest(`${backendUrl}/api/admin/user-request`, { archiveId, projectTitle, fullname, userId: userId.toString() });
 
             setIsLoading(false);
 
             if (response.error) {
-                setErrorResponse({message: response.message, isError: true});
-            }else{
-                setErrorResponse({message: response.message, isError: false});
+                setErrorResponse({ message: response.message, isError: true });
+            } else {
+                setErrorResponse({ message: response.message, isError: false });
                 setRequestMount(requestMount ? false : true);
 
             }
         } catch (error) {
             setIsLoading(false);
-            console.log("Error: ",error);    
+            console.log("Error: ", error);
         }
     }
 
     // ##########################################################################   ACCEPT/DECLINE USER REQUEST    ############################################################################
     const handleAccept = async (item) => {
         let currentStatus = '';
-        if (item.status === "Approved"){
+        if (item.status === "Approved") {
             currentStatus = 'Pending';
-        }else{
+        } else {
             currentStatus = "Approved";
         }
 
@@ -845,14 +847,14 @@ export const AdminContextProvider = ({ children }) => {
         setIsLoading(true);
 
         try {
-            const response = await apostRequest(`${backendUrl}/api/admin/request-response`, {fullname, projectTitle, acceptId, userId: userId.toString(), userRequestId, currentStatus});
+            const response = await apostRequest(`${backendUrl}/api/admin/request-response`, { fullname, projectTitle, acceptId, userId: userId.toString(), userRequestId, currentStatus });
 
             setIsLoading(false);
 
             if (response.error) {
-                setErrorResponse({message: response.message, isError: true});
-            }else{
-                setErrorResponse({message: response.message, isError: false});
+                setErrorResponse({ message: response.message, isError: true });
+            } else {
+                setErrorResponse({ message: response.message, isError: false });
                 setRequestMount(requestMount ? false : true);
                 setNotificationMount(notificationMount ? false : true);
             }
@@ -863,12 +865,99 @@ export const AdminContextProvider = ({ children }) => {
     }
 
     // #############################################################    ACCEPT USERS REQUEST TO UPLOAD DOCUMENT ##########################################################
-    const handleAcceptFile = async(item) => {
+    const handleAcceptFile = async (item) => {
         setIsLoading(true);
         setErrorResponse(null);
 
         try {
-            const response = await apostRequest(`${backendUrl}/api/admin/accept-document`, {acceptId: item.id.toString(), projectTitle: item.project_title, userUploadId: item.user_id.toString()});
+            const response = await apostRequest(`${backendUrl}/api/admin/accept-document`, { acceptId: item.id.toString(), projectTitle: item.project_title, userUploadId: item.user_id.toString() });
+
+            setIsLoading(false);
+
+            if (response.error) {
+                setErrorResponse({ message: response.message, isError: true });
+            } else {
+                setErrorResponse({ message: response.message, isError: false });
+                setArchiveFileMount(archiveFilesMount ? false : true);
+                setNotificationMount(notificationMount ? false : true);
+            }
+        } catch (error) {
+            console.log("Error: ", error);
+            setIsLoading(false);
+        }
+    }
+
+    // ######################################################################   FETCH CHATBOT INFORMATION   ##############################################################################
+    const [chatbotInfoList, setChatbotInfoList] = useState([]);
+
+    useEffect(() => {
+        if (userId) {
+            const getInfo = async (e) => {
+                setIsLoading(true);
+
+                try {
+                    const response = await agetRequest(`${backendUrl}/api/admin/fetch-chatbot-info`);
+
+                    setIsLoading(false);
+
+                    if (response.error) {
+                        console.log(response.message);
+                    } else {
+                        setChatbotInfoList(response.message);
+                    }
+                } catch (error) {
+                    console.log("Error: ", error);
+                    setIsLoading(false);
+                }
+            };
+            getInfo();
+        }
+    }, [userId, chatbotMount]);
+
+    // ######################################################################   ADD CHATBOT INFORMATION   ##############################################################################
+    const [addChatbotData, setAddChatbotData] = useState([{ keywords: '', information: '' }]);
+    const [isAddChatbot, setIsAddChatbot] = useState(false);
+
+    const handleAddChatbot = async (e) => {
+        e.preventDefault();
+
+        setIsLoading(true);
+        setErrorResponse(null);
+
+        try {
+            const response = await apostRequest(`${backendUrl}/api/admin/add-chatbot-info`, {chatbotInfo: addChatbotData, userId: userId.toString()});
+
+            setIsLoading(false);
+
+            if (response.error) {
+                setErrorResponse({ message: response.message, isError: true });
+            } else {
+                setErrorResponse({ message: response.message, isError: false });
+                setChatbotMount(chatbotMount ? false : true);
+                setIsAddChatbot(false);
+            }
+        } catch (error) {
+            console.log("Error: ", error);
+            setIsLoading(false);
+        }
+    }
+
+    // ############################################################ EDIT CHATBOT INFORMATION    #######################################################################
+    const [editChatbotData, setEditChatbotData] = useState({
+        deleteId: '',
+        keyword: '',
+        information: ''
+    });
+    const [isEditChatbot, setIsEditChatbot] = useState(false);
+
+    const handleEditChatbot = async (e) => {
+        e.preventDefault();
+
+        setIsLoading(true);
+        setErrorResponse(null);
+
+        try {
+            const response = await apostRequest(`${backendUrl}/api/admin/edit-chatbot-info`, {editChatbotData, userId: userId.toString()});
 
             setIsLoading(false);
 
@@ -876,11 +965,39 @@ export const AdminContextProvider = ({ children }) => {
                 setErrorResponse({message: response.message, isError: true});
             }else{
                 setErrorResponse({message: response.message, isError: false});
-                setArchiveFileMount(archiveFilesMount ? false : true);
-                setNotificationMount(notificationMount ? false : true);
+                setIsEditChatbot(false);
+                setChatbotMount(chatbotMount ? false : true);
             }
         } catch (error) {
-            console.log("Error: ", error);
+            console.log(error);
+            setIsLoading(false);
+        }
+    }
+
+    // ###############################################  DELETE CHATBOT INFORMATION  ############################################################
+    const [deleteChatbotData, setDeleteChatbotData] = useState({deleteId: '', keyword: ''});
+    const [isDeleteChatbot, setIsDeleteChatbot] = useState(false);
+
+    const handleDeleteChatbot = async (e) => {
+        e.preventDefault();
+
+        setIsLoading(true);
+        setErrorResponse(null);
+
+        try {
+            const response = await apostRequest(`${backendUrl}/api/admin/delete-chatbot-info`, {deleteChatbotData, userId: userId.toString()});
+
+            setIsLoading(false);
+
+            if (response.error) {
+                setErrorResponse({message: response.message, isError: true});
+            }else{
+                setErrorResponse({message: response.message, isError: false});
+                setIsDeleteChatbot(false);
+                setChatbotMount(chatbotMount ? false : true);
+            }
+        } catch (error) {
+            console.log(error);
             setIsLoading(false);
         }
     }
@@ -919,6 +1036,9 @@ export const AdminContextProvider = ({ children }) => {
         deleteArchiveData, setDeleteArchiveData, handleDeleteArchive, isDeleteArchive, setIsDeleteArchive,
         usersRequestList, setArchiveId, requestData,
         handleButtonRequest, handleAccept, handleAcceptFile,
-        formData, setFormData, isNext, setIsNext
+        formData, setFormData, isNext, setIsNext,
+        chatbotInfoList, addChatbotData, setAddChatbotData, isAddChatbot, setIsAddChatbot, handleAddChatbot,
+        editChatbotData, setEditChatbotData, isEditChatbot, setIsEditChatbot, handleEditChatbot,
+        deleteChatbotData, setDeleteChatbotData, isDeleteChatbot, setIsDeleteChatbot, handleDeleteChatbot
     }}>{children}</AdminContext.Provider>
 }
