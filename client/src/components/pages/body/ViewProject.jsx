@@ -88,7 +88,7 @@ function ViewProject() {
                                                 </fieldset>
                                                 <fieldset>
                                                     {user && (
-                                                        userCredentials && userCredentials.user_type === "Admin" || requestData && requestData.status === "Approved" || userCredentials && userCredentials.id === item.user_id ? (
+                                                        userCredentials && userCredentials.user_type === "Admin" || requestData && requestData.access === true || userCredentials && userCredentials.id === item.user_id ? (
                                                             <>
                                                                 <legend className="text-navy">Project Document:</legend>
                                                                 <div className="pl-4">
@@ -96,12 +96,10 @@ function ViewProject() {
                                                                 </div>
                                                             </>
                                                         ) : (
-                                                            requestData ? (
-                                                                requestData && requestData.status === "Pending" && (
-                                                                    <div style={{ textAlign: 'center', margin: '10px' }}>
-                                                                        <span style={{ padding: '10px', background: 'red', color: '#fff', borderRadius: '3px' }}>Pending Request</span>
-                                                                    </div>
-                                                                )
+                                                            requestData && requestData.status === "Pending" ? (
+                                                                <div style={{ textAlign: 'center', margin: '10px' }}>
+                                                                    <span style={{ padding: '10px', background: 'red', color: '#fff', borderRadius: '3px' }}>Pending Request</span>
+                                                                </div>
                                                             ) : (
                                                                 <div style={{ textAlign: 'center', margin: '10px' }}>
                                                                     <button style={{ padding: '10px' }} className='btn btn-primary' onClick={() => handleButtonRequest(item)}>Request To View Document</button>

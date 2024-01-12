@@ -997,7 +997,25 @@ const getRequestId = async (req, res) => {
         if (error) {
             res.status(401).json({ message: "Server side error!" });
         } else {
-            res.status(200).json({ message: results[0] });
+            if (results.length > 0) {
+                let access = false;
+                jwt.verify(results[0].approved_token, process.env.SECRET_KEY, (error, decode) => {
+                    if (error) {
+                        // error token
+                        // access = false;
+                        results[0].access = false;
+                        res.status(200).json({ message: results[0] });
+                    } else {
+                        // access token
+                        results[0].access = true;
+                        res.status(200).json({ message: results[0] });
+                    }
+                });
+                // results[0].access = access;
+                // res.status(200).json({ message: results[0] });
+            } else {
+                res.status(200).json({ message: null });
+            }
         }
     });
 }
@@ -1083,9 +1101,12 @@ const requestResponse = async (req, res) => {
     if (!sanitizeUserId || !sanitizeAcceptId || !sanitizeUserRequestId) {
         res.status(401).json({ message: "Invalid Input!" });
     } else {
+
+        const approvedToken = jwt.sign({ sanitizeAcceptId, sanitizeCurrentStatus }, process.env.SECRET_KEY, { expiresIn: '2m' });
+
         // update status
-        const acceptStatus = `UPDATE user_file_request SET status = ? WHERE id = ?`;
-        db.query(acceptStatus, [sanitizeCurrentStatus, sanitizeAcceptId], (error, resulsts) => {
+        const acceptStatus = `UPDATE user_file_request SET status = ?, approved_token = ? WHERE id = ?`;
+        db.query(acceptStatus, [sanitizeCurrentStatus, approvedToken, sanitizeAcceptId], (error, resulsts) => {
             if (error) {
                 res.status(401).json({ message: "Server side error!" });
             } else {
@@ -1225,7 +1246,7 @@ const fetchChatbotInfo = async (req, res) => {
 
 // edit chatbot information
 const editChatbotInfo = async (req, res) => {
-    const {editChatbotData, userId} = req.body;
+    const { editChatbotData, userId } = req.body;
 
     const validationRules = [
         { validator: validator.isLength, options: { min: 1 } },
@@ -1237,14 +1258,14 @@ const editChatbotInfo = async (req, res) => {
     const sanitizeUserId = sanitizeAndValidate(userId, validationRules);
 
     if (!sanitizeEditId || !sanitizeKeyword || !sanitizeInformation || !sanitizeUserId) {
-        res.status(401).json({message: "Invalid Input!"});
-    }else{
+        res.status(401).json({ message: "Invalid Input!" });
+    } else {
         const updateChatbot = `UPDATE chatbot_keywords SET keyword = ?, information = ? WHERE id = ?`;
         db.query(updateChatbot, [sanitizeKeyword, sanitizeInformation, sanitizeEditId], (error, results) => {
             if (error) {
-                res.status(401).json({message: "Server side error!"});
-            }else{
-                res.status(200).json({message: "Chatbot information updated!"});
+                res.status(401).json({ message: "Server side error!" });
+            } else {
+                res.status(200).json({ message: "Chatbot information updated!" });
             }
         })
     }
@@ -1252,7 +1273,7 @@ const editChatbotInfo = async (req, res) => {
 
 // delete chabot information
 const deleteChatbotInfo = async (req, res) => {
-    const {deleteChatbotData, userId} = req.body;
+    const { deleteChatbotData, userId } = req.body;
 
     const validationRules = [
         { validator: validator.isLength, options: { min: 1 } },
@@ -1262,15 +1283,15 @@ const deleteChatbotInfo = async (req, res) => {
     const sanitizeUserId = sanitizeAndValidate(userId, validationRules);
 
     if (!deleteId || !sanitizeUserId) {
-        res.status(401).json({message: "Invalid Input!"});
-    }else{
+        res.status(401).json({ message: "Invalid Input!" });
+    } else {
         // delete
         const deleteInfo = `UPDATE chatbot_keywords SET isDelete = ? WHERE id = ?`;
         db.query(deleteInfo, ["Deleted", deleteId], (error, results) => {
             if (error) {
-                res.status(401).json({message: "Server side error!"});
-            }else{
-                res.status(200).json({message: `Successfully Deleted!`});
+                res.status(401).json({ message: "Server side error!" });
+            } else {
+                res.status(200).json({ message: `Successfully Deleted!` });
             }
         })
     }

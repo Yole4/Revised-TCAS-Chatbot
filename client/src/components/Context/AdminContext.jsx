@@ -935,6 +935,7 @@ export const AdminContextProvider = ({ children }) => {
                 setErrorResponse({ message: response.message, isError: false });
                 setChatbotMount(chatbotMount ? false : true);
                 setIsAddChatbot(false);
+                setAddChatbotData([{ keywords: '', information: '' }]);
             }
         } catch (error) {
             console.log("Error: ", error);
