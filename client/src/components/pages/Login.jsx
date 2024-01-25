@@ -59,9 +59,8 @@ function Login() {
                     <div className="card" id="loginPage" style={{ padding: '0px 20px 0px 20px', overflow: 'auto', border: '2px solid #ccc', marginTop: '50px' }}>
                         <div className="card-body login-card-body">
 
-                            <div style={{ textAlign: 'center' }}>
-                            </div>
-                            <p style={{ textAlign: 'center', fontSize: 20, padding: '0px 10px 15px 0px' }}><strong>Login</strong></p>
+                            
+                            <p style={{ textAlign: 'center', fontSize: 20, padding: '0px 10px 0px 0px' }}><strong>Login As</strong></p>
 
                             <GoogleOAuthProvider clientId="791915019480-6n1kepg7vfup1dnkggkekr8fvpjk6m5g.apps.googleusercontent.com">
                                 <GoogleLogin
@@ -141,7 +140,7 @@ function Login() {
                         <div className="card-body login-card-body">
 
                             <div style={{ textAlign: 'center' }}></div>
-                            <p style={{ textAlign: 'center', fontSize: 20, padding: '0px 10px 15px 0px' }}><strong>Register</strong></p>
+                            <p style={{ textAlign: 'center', fontSize: 20, padding: '0px 10px 15px 0px' }}><strong>Register As</strong></p>
 
                             <GoogleOAuthProvider clientId="791915019480-6n1kepg7vfup1dnkggkekr8fvpjk6m5g.apps.googleusercontent.com">
                                 <GoogleLogin

@@ -29,7 +29,8 @@ export const AuthContextProvider = ({ children }) => {
 
                 if (response.error) {
                     setUser(null);
-                    setErrorResponse({ message: response.message, isError: true });
+                    // setErrorResponse({ message: response.message, isError: true });
+                    console.log(response.message);
                 } else {
                     setUserId(response.user.id);
                     setUser(response);

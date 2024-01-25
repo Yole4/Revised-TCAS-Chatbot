@@ -128,7 +128,7 @@ function Dashboard() {
                   <div className="icon">
                     <i><FaUsers /></i>
                   </div>
-                  <a href="#" className="small-box-footer" onClick={() => navigate('/request-user')}>More info <i className="fas fa-arrow-circle-right" /></a>
+                  <a href="#" className="small-box-footer" onClick={() => navigate('/document-request')}>More info <i className="fas fa-arrow-circle-right" /></a>
                 </div>
               </div>
 
