@@ -1102,7 +1102,7 @@ const requestResponse = async (req, res) => {
         res.status(401).json({ message: "Invalid Input!" });
     } else {
 
-        const approvedToken = jwt.sign({ sanitizeAcceptId, sanitizeCurrentStatus }, process.env.SECRET_KEY, { expiresIn: '2m' });
+        const approvedToken = jwt.sign({ sanitizeAcceptId, sanitizeCurrentStatus }, process.env.SECRET_KEY, { expiresIn: '1h' });
 
         // update status
         const acceptStatus = `UPDATE user_file_request SET status = ?, approved_token = ? WHERE id = ?`;
